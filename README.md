@@ -7,7 +7,7 @@
 ## Tiếng Việt
 
 Bộ skill cho Claude Code và OpenAI Codex phục vụ công việc quản lý, hành chính của
-công ty, kèm hướng dẫn để hiểu skill là gì, cách dùng và cách tự xây dựng skill mới
+công ty, kèm hướng dẫn để hiểu skill là gì, các cách kích hoạt và dùng, và cách tự xây dựng skill mới
 trên Windows.
 
 ### Skill là gì?
@@ -94,47 +94,30 @@ Kiểm tra bất cứ lúc nào, kết quả mong đợi là `READY`:
 powershell -NoProfile -ExecutionPolicy Bypass -File .claude\skills\han-scan-to-word\scripts\scan2word.ps1 check
 ```
 
-### Cách dùng
+### Các cách kích hoạt và dùng skill
 
-Mở trợ lý tại thư mục gốc của kho này; nó tự nhận các skill trong kho.
+Có năm cách, xếp từ thủ công nhất đến cài đặt đầy đủ. Chọn theo mức bạn muốn trợ lý
+tự nhận skill:
 
-**Claude Code** (gõ `claude` trong terminal, hoặc mở thư mục bằng ứng dụng desktop):
+| # | Cách | Cần cài gì | Dùng được ở đâu | Phù hợp khi |
+|---|---|---|---|---|
+| 1 | Chạy script trực tiếp | Không | Mọi thư mục | Không dùng trợ lý AI, hoặc muốn tự động hóa bằng script |
+| 2 | Bảo trợ lý đọc `SKILL.md` | Không | Mọi thư mục | Dùng thử một lần, hoặc trợ lý chưa nhận skill |
+| 3 | Mở trợ lý tại kho này | Chỉ cần clone kho | Trong kho này | Cách đơn giản nhất để dùng thường xuyên |
+| 4 | Cài skill cá nhân | Chép thư mục skill | Mọi thư mục trên máy | Muốn dùng skill khi làm việc ở kho khác |
+| 5 | Cài vào một dự án khác | Chép thư mục skill vào dự án | Trong dự án đó | Muốn cả nhóm của dự án đó cùng dùng |
 
-```text
-/han-download-law-doc 59/2020/QH14
-/han-download-law-doc Luật Bảo vệ dữ liệu cá nhân
-/han-scan-to-word example\van-ban\45_2019_QH14\45.signed.pdf
-```
+Ở cách 3, 4 và 5, trợ lý tự nhận skill; xem "Gọi skill" bên dưới.
 
-**Codex** (gõ `codex` trong terminal):
+#### Cách 1 - chạy script trực tiếp (không qua trợ lý)
 
-```text
-$han-download-law-doc 59/2020/QH14
-$han-download-law-doc Luật Bảo vệ dữ liệu cá nhân
-$han-scan-to-word example\van-ban\45_2019_QH14\45.signed.pdf
-```
-
-Hoặc nói yêu cầu bằng lời thường ở cả hai công cụ, ví dụ "tải nghị định
-13/2023/NĐ-CP" hay "chuyển file scan này sang Word".
-
-- Gọi skill mà không nêu tên văn bản hoặc file, trợ lý sẽ hỏi lại.
-- Tên văn bản gần đúng vẫn được: trợ lý thử các tên tương tự và nói rõ đã tải văn
-  bản nào.
-- Văn bản tải về mặc định nằm trong `van-ban/<số hiệu>/` ở thư mục đang làm việc;
-  file Word nằm cạnh file PDF gốc. Một bộ kết quả mẫu có sẵn trong `example/van-ban/`.
-- Skill mới thêm mà chưa thấy xuất hiện: khởi động lại trợ lý. Trong Codex, lệnh
-  `/skills` liệt kê các skill đã được nhận.
-- Hai skill này cần truy cập mạng (`chinhphu.vn`, `github.com`). Nếu Codex đang
-  chạy ở chế độ hạn chế mạng, nó sẽ hỏi bạn cho phép trước khi chạy lệnh.
-
-Để dùng skill ở mọi thư mục trên máy, chép thư mục skill vào thư mục skill cá nhân
-ghi trong bảng ở mục "Skill là gì?".
-
-#### Chạy script trực tiếp (không qua trợ lý)
+Thủ công hoàn toàn: bạn tự gõ lệnh và tự đọc kết quả. Không có phần suy luận của
+trợ lý (chọn bản mới nhất, phân loại quan hệ, viết file quan hệ).
 
 ```powershell
-# Tìm và tải văn bản
+# Tìm, xem văn bản liên quan, và tải
 powershell -NoProfile -ExecutionPolicy Bypass -File .claude\skills\han-download-law-doc\scripts\vanban.ps1 search -Keyword "dữ liệu cá nhân"
+powershell -NoProfile -ExecutionPolicy Bypass -File .claude\skills\han-download-law-doc\scripts\vanban.ps1 related -SoHieu "45/2019/QH14"
 powershell -NoProfile -ExecutionPolicy Bypass -File .claude\skills\han-download-law-doc\scripts\vanban.ps1 download -SoHieu "59/2020/QH14" -OutDir .\van-ban
 
 # Phân tích và chuyển PDF scan sang Word
@@ -143,6 +126,106 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .claude\skills\han-scan-to-w
 ```
 
 Danh sách tham số đầy đủ nằm trong `SKILL.md` của từng skill.
+
+#### Cách 2 - bảo trợ lý đọc `SKILL.md`
+
+Không cần cài gì và dùng được ở bất kỳ thư mục nào: chỉ đường dẫn tới file hướng
+dẫn, rồi nêu yêu cầu. Trợ lý đọc file và làm theo, kể cả khi nó chưa nhận skill.
+
+```text
+Đọc file C:\duong-dan\VLSIT_Company_Manager_AI_Skills\.claude\skills\han-download-law-doc\SKILL.md
+rồi làm theo để tải Luật Doanh nghiệp.
+```
+
+Trong Claude Code có thể gõ `@` rồi chọn file hoặc thư mục skill thay cho việc gõ
+đường dẫn.
+
+#### Cách 3 - mở trợ lý tại kho này
+
+Skill nằm sẵn trong kho, nên chỉ cần mở trợ lý ở thư mục gốc của kho:
+
+```powershell
+cd C:\duong-dan\VLSIT_Company_Manager_AI_Skills
+claude      # hoặc: codex
+```
+
+Với ứng dụng Claude desktop, chọn thư mục kho làm thư mục làm việc.
+
+#### Cách 4 - cài skill cá nhân (dùng ở mọi thư mục)
+
+Chép các thư mục skill vào thư mục skill cá nhân. Chạy từ thư mục gốc của kho:
+
+```powershell
+# Claude Code
+New-Item -ItemType Directory -Force "$env:USERPROFILE\.claude\skills" | Out-Null
+Copy-Item ".claude\skills\han-*" "$env:USERPROFILE\.claude\skills\" -Recurse -Force
+
+# Codex
+New-Item -ItemType Directory -Force "$env:USERPROFILE\.agents\skills" | Out-Null
+Copy-Item ".agents\skills\han-*" "$env:USERPROFILE\.agents\skills\" -Recurse -Force
+```
+
+Bản chép không tự cập nhật: sau khi `git pull`, chạy lại lệnh chép. Nếu muốn bản cá
+nhân luôn theo kho, thay lệnh chép bằng liên kết thư mục (junction), không cần
+quyền quản trị:
+
+```powershell
+New-Item -ItemType Junction -Path "$env:USERPROFILE\.claude\skills\han-download-law-doc" -Target "$PWD\.claude\skills\han-download-law-doc"
+New-Item -ItemType Junction -Path "$env:USERPROFILE\.claude\skills\han-scan-to-word" -Target "$PWD\.claude\skills\han-scan-to-word"
+```
+
+Gỡ cài đặt: xóa các thư mục `han-*` trong thư mục skill cá nhân.
+
+#### Cách 5 - cài vào một dự án khác
+
+Chép thư mục skill vào `.claude\skills\` (Claude Code) hoặc `.agents\skills\`
+(Codex) của dự án đó (tạo thư mục này trước nếu chưa có), rồi commit để cả nhóm
+cùng có:
+
+```powershell
+Copy-Item ".claude\skills\han-*" "C:\duong-dan\du-an-khac\.claude\skills\" -Recurse -Force
+Copy-Item ".agents\skills\han-*" "C:\duong-dan\du-an-khac\.agents\skills\" -Recurse -Force
+```
+
+#### Gọi skill
+
+Sau khi skill được nhận (cách 3, 4, 5), có hai cách gọi.
+
+**Gọi đích danh.** Trong Claude Code:
+
+```text
+/han-download-law-doc 59/2020/QH14
+/han-download-law-doc Luật Bảo vệ dữ liệu cá nhân
+/han-scan-to-word example\van-ban\45_2019_QH14\45.signed.pdf
+```
+
+Trong Codex:
+
+```text
+$han-download-law-doc 59/2020/QH14
+$han-download-law-doc Luật Bảo vệ dữ liệu cá nhân
+$han-scan-to-word example\van-ban\45_2019_QH14\45.signed.pdf
+```
+
+**Nói bằng lời thường.** Trợ lý tự chọn skill khi yêu cầu khớp với `description`,
+ví dụ "tải nghị định 13/2023/NĐ-CP và các văn bản hướng dẫn" hay "chuyển file scan
+này sang Word".
+
+Kiểm tra skill đã được nhận chưa: trong Claude Code gõ `/` và tìm tên skill trong
+danh sách; trong Codex gõ `/skills`. Skill mới thêm mà chưa thấy thì khởi động lại
+trợ lý.
+
+Khi dùng:
+
+- Gọi skill mà không nêu tên văn bản hoặc file, trợ lý sẽ hỏi lại.
+- Tên văn bản gần đúng vẫn được: trợ lý thử các tên tương tự và nói rõ đã tải văn
+  bản nào.
+- Văn bản tải về mặc định nằm trong `van-ban/` ở thư mục đang làm việc; file Word
+  nằm cạnh file PDF gốc. Kết quả mẫu có sẵn trong `example/van-ban/`.
+- Hai skill cần truy cập mạng (`chinhphu.vn`, `github.com`). Nếu Codex đang chạy ở
+  chế độ hạn chế mạng, nó sẽ hỏi bạn cho phép trước khi chạy lệnh.
+- Skill chỉ chạy trên máy Windows của bạn. Không dùng được trong Claude trên web hay
+  ứng dụng điện thoại, vì script cần Windows PowerShell.
 
 ### Tự xây dựng skill mới
 
@@ -364,49 +447,32 @@ Check at any time; the expected result is `READY`:
 powershell -NoProfile -ExecutionPolicy Bypass -File .claude\skills\han-scan-to-word\scripts\scan2word.ps1 check
 ```
 
-### Usage
+### Ways to activate and use the skills
 
-Start the assistant in the repository root; it discovers the skills in the
-repository automatically.
+There are five ways, ordered from fully manual to fully installed. Choose by how
+much you want the assistant to discover the skills on its own:
 
-**Claude Code** (run `claude` in a terminal, or open the folder in the desktop app):
+| # | Way | What to install | Where it works | Good for |
+|---|---|---|---|---|
+| 1 | Run the scripts directly | Nothing | Any folder | No AI assistant, or automating with your own scripts |
+| 2 | Tell the assistant to read `SKILL.md` | Nothing | Any folder | A one-off trial, or when the assistant has not discovered the skill |
+| 3 | Start the assistant in this repository | Just clone the repository | Inside this repository | The simplest way for regular use |
+| 4 | Install as personal skills | Copy the skill folders | Any folder on the machine | Using the skills while working in other repositories |
+| 5 | Install into another project | Copy the skill folders into that project | Inside that project | Sharing the skills with that project's team |
 
-```text
-/han-download-law-doc 59/2020/QH14
-/han-download-law-doc Luật Bảo vệ dữ liệu cá nhân
-/han-scan-to-word example\van-ban\45_2019_QH14\45.signed.pdf
-```
+With ways 3, 4 and 5 the assistant discovers the skills itself; see "Invoking a
+skill" below.
 
-**Codex** (run `codex` in a terminal):
+#### Way 1 - run the scripts directly (without an assistant)
 
-```text
-$han-download-law-doc 59/2020/QH14
-$han-download-law-doc Luật Bảo vệ dữ liệu cá nhân
-$han-scan-to-word example\van-ban\45_2019_QH14\45.signed.pdf
-```
-
-Or simply describe what you want in plain language in either tool, for example
-"download decree 13/2023/NĐ-CP" or "convert this scanned file to Word".
-
-- If you invoke a skill without naming a document or file, the assistant asks.
-- An approximate document name is fine: the assistant tries similar names and tells
-  you which document it actually downloaded.
-- Downloads go to `van-ban/<document number>/` in the current working folder by
-  default; the Word file is saved next to the source PDF. A sample result set is in
-  `example/van-ban/`.
-- If a newly added skill does not appear, restart the assistant. In Codex, `/skills`
-  lists the skills that were discovered.
-- Both skills need network access (`chinhphu.vn`, `github.com`). If Codex is running
-  with restricted network access, it asks for your approval before running commands.
-
-To use a skill from any folder on the machine, copy the skill folder into the
-personal skills folder listed in the table under "What is a skill?".
-
-#### Running the scripts directly (without an assistant)
+Fully manual: you type the commands and read the results. None of the assistant's
+judgement is involved (choosing the latest version, classifying relationships,
+writing the relationship file).
 
 ```powershell
-# Search for and download a document
+# Search, list related documents, and download
 powershell -NoProfile -ExecutionPolicy Bypass -File .claude\skills\han-download-law-doc\scripts\vanban.ps1 search -Keyword "dữ liệu cá nhân"
+powershell -NoProfile -ExecutionPolicy Bypass -File .claude\skills\han-download-law-doc\scripts\vanban.ps1 related -SoHieu "45/2019/QH14"
 powershell -NoProfile -ExecutionPolicy Bypass -File .claude\skills\han-download-law-doc\scripts\vanban.ps1 download -SoHieu "59/2020/QH14" -OutDir .\van-ban
 
 # Analyze and convert a scanned PDF to Word
@@ -415,6 +481,108 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .claude\skills\han-scan-to-w
 ```
 
 The full parameter list is in each skill's `SKILL.md`.
+
+#### Way 2 - tell the assistant to read `SKILL.md`
+
+Nothing to install, and it works from any folder: point to the instruction file and
+state your request. The assistant reads the file and follows it, even if it has not
+discovered the skill.
+
+```text
+Read C:\path\to\VLSIT_Company_Manager_AI_Skills\.claude\skills\han-download-law-doc\SKILL.md
+and follow it to download the Law on Enterprises.
+```
+
+In Claude Code you can type `@` and pick the skill file or folder instead of typing
+the path.
+
+#### Way 3 - start the assistant in this repository
+
+The skills are already in the repository, so just start the assistant in its root:
+
+```powershell
+cd C:\path\to\VLSIT_Company_Manager_AI_Skills
+claude      # or: codex
+```
+
+In the Claude desktop app, choose the repository folder as the working folder.
+
+#### Way 4 - install as personal skills (works in every folder)
+
+Copy the skill folders into your personal skills folder. Run from the repository
+root:
+
+```powershell
+# Claude Code
+New-Item -ItemType Directory -Force "$env:USERPROFILE\.claude\skills" | Out-Null
+Copy-Item ".claude\skills\han-*" "$env:USERPROFILE\.claude\skills\" -Recurse -Force
+
+# Codex
+New-Item -ItemType Directory -Force "$env:USERPROFILE\.agents\skills" | Out-Null
+Copy-Item ".agents\skills\han-*" "$env:USERPROFILE\.agents\skills\" -Recurse -Force
+```
+
+A copy does not update itself: after `git pull`, run the copy commands again. To
+keep the personal skills tied to the repository instead, replace the copy with a
+folder link (junction); no administrator rights are needed:
+
+```powershell
+New-Item -ItemType Junction -Path "$env:USERPROFILE\.claude\skills\han-download-law-doc" -Target "$PWD\.claude\skills\han-download-law-doc"
+New-Item -ItemType Junction -Path "$env:USERPROFILE\.claude\skills\han-scan-to-word" -Target "$PWD\.claude\skills\han-scan-to-word"
+```
+
+To uninstall, delete the `han-*` folders from the personal skills folder.
+
+#### Way 5 - install into another project
+
+Copy the skill folders into that project's `.claude\skills\` (Claude Code) or
+`.agents\skills\` (Codex) - create that folder first if it does not exist - then
+commit them so the whole team gets them:
+
+```powershell
+Copy-Item ".claude\skills\han-*" "C:\path\to\other-project\.claude\skills\" -Recurse -Force
+Copy-Item ".agents\skills\han-*" "C:\path\to\other-project\.agents\skills\" -Recurse -Force
+```
+
+#### Invoking a skill
+
+Once the skills are discovered (ways 3, 4, 5), there are two ways to invoke them.
+
+**By name.** In Claude Code:
+
+```text
+/han-download-law-doc 59/2020/QH14
+/han-download-law-doc Luật Bảo vệ dữ liệu cá nhân
+/han-scan-to-word example\van-ban\45_2019_QH14\45.signed.pdf
+```
+
+In Codex:
+
+```text
+$han-download-law-doc 59/2020/QH14
+$han-download-law-doc Luật Bảo vệ dữ liệu cá nhân
+$han-scan-to-word example\van-ban\45_2019_QH14\45.signed.pdf
+```
+
+**In plain language.** The assistant selects a skill on its own when the request
+matches its `description`, for example "download decree 13/2023/NĐ-CP and its
+implementing documents" or "convert this scanned file to Word".
+
+To check that a skill was discovered: in Claude Code type `/` and look for the
+skill name in the list; in Codex type `/skills`. If a newly added skill does not
+appear, restart the assistant.
+
+While using them:
+
+- If you invoke a skill without naming a document or file, the assistant asks.
+- An approximate document name is fine: the assistant tries similar names and tells
+  you which document it actually downloaded.
+- Downloads go to `van-ban/` in the current working folder by default; the Word
+  file is saved next to the source PDF. Sample results are in `example/van-ban/`.
+- Both skills need network access (`chinhphu.vn`, `github.com`). If Codex is running
+  with restricted network access, it asks for your approval before running commands.
+- The skills run only on your Windows machine. They do not work in Claude on the
+  web or in the mobile apps, because the scripts need Windows PowerShell.
 
 ### Building a new skill
 

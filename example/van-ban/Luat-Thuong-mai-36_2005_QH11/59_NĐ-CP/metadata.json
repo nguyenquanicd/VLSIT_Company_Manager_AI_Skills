@@ -1,0 +1,25 @@
+{
+    "docId":  "15310",
+    "soHieu":  "59/NĐ-CP",
+    "tieuDe":  "Nghị định số 59/NĐ-CP của Chính phủ: Nghị định Quy định chi tiết Luật Thương mại về hàng hóa, dịch vụ cấm kinh doanh, hạn chế kinh doanh và kinh doanh có điều kiện",
+    "nguon":  "https://vanban.chinhphu.vn/?pageid=27160\u0026docid=15310",
+    "ngayBanHanh":  "12-06-2006",
+    "ngayHieuLuc":  "",
+    "chuaCoHieuLuc":  false,
+    "thongTin":  {
+                     "Số ký hiệu":  "59/NĐ-CP",
+                     "Ngày ban hành":  "12-06-2006",
+                     "Loại văn bản":  "Nghị định",
+                     "Cơ quan ban hành":  "Chính phủ",
+                     "Người ký":  "Phan Văn Khải",
+                     "Trích yếu":  "Nghị định Quy định chi tiết Luật Thương mại về hàng hóa, dịch vụ cấm kinh doanh, hạn chế kinh doanh và kinh doanh có điều kiện"
+                 },
+    "tepDinhKem":  [
+                       {
+                           "tep":  "15798_nd59cp.doc",
+                           "nguon":  "https://datafiles.chinhphu.vn/cpp/files/vbpq/2006/07/15798_nd59cp.doc",
+                           "bytes":  340480
+                       }
+                   ],
+    "taiLuc":  "2026-10-04T11:16:29+07:00"
+}

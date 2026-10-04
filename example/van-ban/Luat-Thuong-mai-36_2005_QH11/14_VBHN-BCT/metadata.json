@@ -1,0 +1,25 @@
+{
+    "docId":  "210607",
+    "soHieu":  "14/VBHN-BCT",
+    "tieuDe":  "Văn bản hợp nhất số 14/VBHN-BCT của Bộ Công thương: Hướng dẫn đăng ký hoạt động nhượng quyền thương mại",
+    "nguon":  "https://vanban.chinhphu.vn/?pageid=27160\u0026docid=210607",
+    "ngayBanHanh":  "21-06-2024",
+    "ngayHieuLuc":  "",
+    "chuaCoHieuLuc":  false,
+    "thongTin":  {
+                     "Số ký hiệu":  "14/VBHN-BCT",
+                     "Ngày ban hành":  "21-06-2024",
+                     "Loại văn bản":  "Văn bản hợp nhất",
+                     "Cơ quan ban hành":  "Bộ Công thương",
+                     "Người ký":  "Phan Thị Thắng",
+                     "Trích yếu":  "Hướng dẫn đăng ký hoạt động nhượng quyền thương mại"
+                 },
+    "tepDinhKem":  [
+                       {
+                           "tep":  "14-vbhn-bct.pdf",
+                           "nguon":  "https://datafiles.chinhphu.vn/cpp/files/vbpq/2024/7/14-vbhn-bct.pdf",
+                           "bytes":  11409765
+                       }
+                   ],
+    "taiLuc":  "2026-10-04T11:13:42+07:00"
+}

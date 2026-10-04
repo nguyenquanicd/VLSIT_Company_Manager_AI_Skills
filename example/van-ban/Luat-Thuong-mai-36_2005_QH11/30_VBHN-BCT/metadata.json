@@ -1,0 +1,25 @@
+{
+    "docId":  "214711",
+    "soHieu":  "30/VBHN-BCT",
+    "tieuDe":  "Văn bản hợp nhất số 30/VBHN-BCT của Bộ Công thương: Quy định thủ tục đăng ký dấu nghiệp vụ của thương nhân kinh doanh dịch vụ giám định thương mại",
+    "nguon":  "https://vanban.chinhphu.vn/?pageid=27160\u0026docid=214711",
+    "ngayBanHanh":  "16-07-2025",
+    "ngayHieuLuc":  "",
+    "chuaCoHieuLuc":  false,
+    "thongTin":  {
+                     "Số ký hiệu":  "30/VBHN-BCT",
+                     "Ngày ban hành":  "16-07-2025",
+                     "Loại văn bản":  "Văn bản hợp nhất",
+                     "Cơ quan ban hành":  "Bộ Công thương",
+                     "Người ký":  "Nguyễn Sinh Nhật Tân",
+                     "Trích yếu":  "Quy định thủ tục đăng ký dấu nghiệp vụ của thương nhân kinh doanh dịch vụ giám định thương mại"
+                 },
+    "tepDinhKem":  [
+                       {
+                           "tep":  "30-vbhn-btc.pdf",
+                           "nguon":  "https://datafiles.chinhphu.vn/cpp/files/vbpq/2025/7/30-vbhn-btc.pdf",
+                           "bytes":  2463689
+                       }
+                   ],
+    "taiLuc":  "2026-10-04T11:13:45+07:00"
+}

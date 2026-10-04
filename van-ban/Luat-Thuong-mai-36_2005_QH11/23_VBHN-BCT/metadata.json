@@ -1,0 +1,25 @@
+{
+    "docId":  "217737",
+    "soHieu":  "23/VBHN-BCT",
+    "tieuDe":  "Văn bản hợp nhất số 23/VBHN-BCT của Bộ Công thương: Quy định biểu mẫu thực hiện Nghị định số 07/2016/NĐ-CP ngày 25 tháng 01 năm 2016 của Chính phủ quy định chi tiết Luật Thương mại về Văn phòng đại diện, Chi nhánh của thương nhân nước ngoài tại Việt Nam",
+    "nguon":  "https://vanban.chinhphu.vn/?pageid=27160\u0026docid=217737",
+    "ngayBanHanh":  "30-03-2026",
+    "ngayHieuLuc":  "",
+    "chuaCoHieuLuc":  false,
+    "thongTin":  {
+                     "Số ký hiệu":  "23/VBHN-BCT",
+                     "Ngày ban hành":  "30-03-2026",
+                     "Loại văn bản":  "Văn bản hợp nhất",
+                     "Cơ quan ban hành":  "Bộ Công thương",
+                     "Người ký":  "Nguyễn Sinh Nhật Tân",
+                     "Trích yếu":  "Quy định biểu mẫu thực hiện Nghị định số 07/2016/NĐ-CP ngày 25 tháng 01 năm 2016 của Chính phủ quy định chi tiết Luật Thương mại về Văn phòng đại diện, Chi nhánh của thương nhân nước ngoài tại Việt Nam"
+                 },
+    "tepDinhKem":  [
+                       {
+                           "tep":  "23-vbhn-bct.pdf",
+                           "nguon":  "https://datafiles.chinhphu.vn/cpp/files/vbpq/2026/4/23-vbhn-bct.pdf",
+                           "bytes":  9999676
+                       }
+                   ],
+    "taiLuc":  "2026-10-04T11:14:06+07:00"
+}

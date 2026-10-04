@@ -1,0 +1,30 @@
+{
+    "docId":  "213491",
+    "soHieu":  "03/VBHN-BCT",
+    "tieuDe":  "Văn bản hợp nhất số 03/VBHN-BCT của Bộ Công thương: Quy định xử phạt vi phạm hành chính trong hoạt động thương mại, sản xuất, buôn bán hàng giả, hàng cấm và bảo vệ quyền lợi người tiêu dùng",
+    "nguon":  "https://vanban.chinhphu.vn/?pageid=27160\u0026docid=213491",
+    "ngayBanHanh":  "23-04-2025",
+    "ngayHieuLuc":  "",
+    "chuaCoHieuLuc":  false,
+    "thongTin":  {
+                     "Số ký hiệu":  "03/VBHN-BCT",
+                     "Ngày ban hành":  "23-04-2025",
+                     "Loại văn bản":  "Văn bản hợp nhất",
+                     "Cơ quan ban hành":  "Bộ Công thương",
+                     "Người ký":  "Nguyễn Sinh Nhật Tân",
+                     "Trích yếu":  "Quy định xử phạt vi phạm hành chính trong hoạt động thương mại, sản xuất, buôn bán hàng giả, hàng cấm và bảo vệ quyền lợi người tiêu dùng"
+                 },
+    "tepDinhKem":  [
+                       {
+                           "tep":  "03-vbhn-bct.pdf",
+                           "nguon":  "https://datafiles.chinhphu.vn/cpp/files/vbpq/2025/4/03-vbhn-bct.pdf",
+                           "bytes":  21732684
+                       },
+                       {
+                           "tep":  "03-vbhn-bct-kem.pdf",
+                           "nguon":  "https://datafiles.chinhphu.vn/cpp/files/vbpq/2025/4/03-vbhn-bct-kem.pdf",
+                           "bytes":  30181930
+                       }
+                   ],
+    "taiLuc":  "2026-10-04T11:14:31+07:00"
+}

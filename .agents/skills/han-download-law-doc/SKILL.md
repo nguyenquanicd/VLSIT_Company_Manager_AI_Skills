@@ -1,6 +1,6 @@
 ---
 name: han-download-law-doc
-description: Tìm và tải file gốc (PDF ký số, DOC) của văn bản pháp luật Việt Nam từ Cổng Thông tin điện tử Chính phủ (vanban.chinhphu.vn) - luật, nghị định, thông tư, quyết định, chỉ thị, công văn. Dùng khi người dùng muốn tải, tìm, tra cứu hoặc lưu một văn bản pháp luật, nêu số hiệu như "59/2020/QH14" hay "13/2023/NĐ-CP", hỏi văn bản nào quy định về một vấn đề, cần bản chính thức để trích dẫn, hoặc nhắc tới thuvienphapluat.vn, vbpl.vn, công báo - kể cả khi không nói chữ "tải".
+description: Tìm và tải file gốc (PDF ký số) của văn bản pháp luật Việt Nam từ Cổng Thông tin điện tử Chính phủ (vanban.chinhphu.vn), kèm trọn bộ nghị định, thông tư, văn bản hướng dẫn và sửa đổi liên quan, chọn bản mới nhất còn hiệu lực, và lập file mô tả quan hệ giữa các văn bản. Dùng khi người dùng muốn tải, tìm, tra cứu một văn bản pháp luật, nêu số hiệu như "59/2020/QH14", hỏi văn bản nào quy định hay hướng dẫn một vấn đề, hoặc nhắc tới thuvienphapluat.vn, vbpl.vn - kể cả khi không nói chữ "tải".
 compatibility: Windows PowerShell 5.1 trở lên (có sẵn trên Windows 10/11) hoặc PowerShell 7; cần truy cập internet tới chinhphu.vn.
 ---
 
@@ -8,7 +8,9 @@ compatibility: Windows PowerShell 5.1 trở lên (có sẵn trên Windows 10/11)
 
 Skill này lấy **file gốc do Nhà nước công bố** (thường là PDF có chữ ký số) từ
 `vanban.chinhphu.vn`, kèm một file `metadata.json` ghi số hiệu, ngày ban hành, ngày
-có hiệu lực, cơ quan ban hành, người ký và đường dẫn nguồn.
+có hiệu lực, cơ quan ban hành, người ký và đường dẫn nguồn. Mặc định nó tải **trọn
+bộ**: văn bản người dùng cần, các văn bản hướng dẫn và sửa đổi đang áp dụng, và một
+file `QUAN-HE-VAN-BAN.md` giải thích quan hệ giữa chúng.
 
 ## Vì sao không lấy từ thuvienphapluat.vn
 
@@ -93,21 +95,186 @@ Mã thoát `2` nghĩa là có ít nhất một văn bản không tìm thấy ho�
 script vẫn tải xong các văn bản còn lại và in mục `NOT FOUND` kèm các kết quả gần
 nhất.
 
+### 4. Tìm văn bản liên quan (`related`)
+
+```powershell
+... vanban.ps1 related -SoHieu "45/2019/QH14"
+... vanban.ps1 related -DocId 198540 -Keyword "tuổi nghỉ hưu;lao động nước ngoài;hợp đồng lao động"
+```
+
+Nhận đúng một văn bản gốc, rồi tìm trên cổng (cả lớp 1 và lớp 2) mọi văn bản nhắc
+tới nó theo **số hiệu** và theo **tên**. Dòng đầu là văn bản gốc kèm ngày ban hành,
+ngày có hiệu lực, và cờ `** NOT YET IN FORCE **` nếu chưa tới ngày hiệu lực. Mỗi
+dòng sau là một ứng viên:
+
+```
+[docId] số hiệu | ngày ban hành | AFTER hoặc BEFORE | C1 hoặc C2 | trích yếu
+```
+
+- `AFTER` / `BEFORE`: ban hành sau hay trước văn bản gốc. Văn bản hướng dẫn một luật
+  thì phải ban hành sau luật đó, nên nhóm `AFTER` là nơi tìm văn bản đang áp dụng;
+  nhóm `BEFORE` phần lớn là văn bản của phiên bản luật cũ.
+- `-Keyword`: thêm cụm từ tìm kiếm, ngăn cách bằng `;`. Rất cần, vì script chỉ tìm
+  theo tên và số hiệu của văn bản gốc - xem "Vì sao phải thêm từ khóa" bên dưới.
+
+Script chỉ **gom ứng viên**. Việc xác định từng văn bản quan hệ thế nào với văn bản
+gốc là phần của bạn, dựa trên câu chữ của trích yếu.
+
 ## Quy trình nên theo
 
+Mặc định, người dùng cần **trọn bộ** chứ không chỉ một file: văn bản họ hỏi, kèm các
+nghị định, thông tư, văn bản hướng dẫn thi hành và sửa đổi đang áp dụng, cùng một
+file giải thích quan hệ giữa chúng. Một luật đứng riêng thường không đủ để làm
+việc, vì phần lớn chi tiết thực thi nằm ở văn bản hướng dẫn. Chỉ tải riêng một văn
+bản khi người dùng nói rõ họ chỉ cần đúng văn bản đó.
+
 0. **Chưa có tên văn bản** → hỏi người dùng trước khi làm gì khác. Nếu skill được
-   gọi mà không kèm tên, số hiệu hay chủ đề nào (ví dụ chỉ gõ tên
-   skill `han-download-law-doc`, hoặc "tải giúp tôi văn bản pháp luật"), hãy hỏi một câu
+   gọi mà không kèm tên, số hiệu hay chủ đề nào (ví dụ chỉ gõ tên skill
+   `han-download-law-doc`, hoặc "tải giúp tôi văn bản pháp luật"), hãy hỏi một câu
    ngắn: họ cần văn bản nào - tên hoặc số hiệu, và nếu nhớ thì cả năm ban hành.
    Đừng tự chọn một văn bản thay họ và đừng chạy script khi chưa có câu trả lời.
-1. **Có số hiệu** → `download -SoHieu` thẳng. Không cần tìm trước.
-2. **Chỉ có tên hoặc chủ đề** → `search`, rồi:
-   - nếu chỉ một kết quả hợp lý rõ ràng, tải luôn bằng `-DocId`;
-   - nếu có nhiều văn bản cùng tên qua các thời kỳ (ví dụ Luật Đất đai 2013 và
-     2024, hoặc luật gốc và luật sửa đổi), đưa danh sách ngắn cho người dùng chọn.
-     Đoán sai phiên bản luật là lỗi có hậu quả thật, nên đây là lúc đáng hỏi.
-3. **Báo lại** cho người dùng: số hiệu, tên văn bản, ngày ban hành, ngày có hiệu
-   lực, và đường dẫn file đã lưu (dạng link bấm được).
+1. **Xác định văn bản gốc** bằng `search` (theo số hiệu hoặc tên; xem "Khi tên
+   người dùng đưa không khớp").
+2. **Chọn bản mới nhất còn hiệu lực** của văn bản gốc - xem mục "Luôn lấy bản mới
+   nhất đang còn hiệu lực".
+3. **Gom văn bản liên quan** bằng `related`, chạy thêm với `-Keyword` cho các mảng
+   nội dung chính của văn bản gốc.
+4. **Phân loại và chọn lọc** từng ứng viên: quan hệ gì với văn bản gốc, còn áp dụng
+   hay đã bị thay thế. Bỏ ứng viên không liên quan (trùng từ khóa nhưng khác chủ đề).
+5. **Tải** tất cả văn bản được chọn vào một thư mục chung bằng một lệnh `download
+   -DocId ... -OutDir "van-ban\<tên bộ>"`, ví dụ
+   `van-ban\Bo-luat-Lao-dong-45_2019_QH14`. Nếu bộ có trên 20 văn bản, nói số lượng
+   cho người dùng và hỏi họ muốn tải hết hay chỉ nhóm chính.
+6. **Viết file quan hệ** `QUAN-HE-VAN-BAN.md` vào thư mục đó - xem mẫu bên dưới.
+7. **Báo lại**: văn bản gốc (số hiệu, tên, ngày ban hành, ngày hiệu lực), số văn bản
+   đã tải theo từng nhóm, link tới thư mục và file quan hệ, và **mọi lưu ý đặc biệt**.
+
+## Luôn lấy bản mới nhất đang còn hiệu lực
+
+Cổng Chính phủ **không ghi** văn bản còn hay hết hiệu lực. Vì vậy việc này là suy
+luận từ bằng chứng, và phải nói rõ với người dùng là suy luận. Cách làm:
+
+- **Văn bản gốc.** Tìm theo tên để xem có văn bản cùng tên, cùng loại, ban hành
+  muộn hơn không (Luật Đất đai 2013 và 2024; Bộ luật Lao động 2012 và 2019). Nếu có,
+  bản mới nhất là bản cần tải. Nếu người dùng nêu đích danh số hiệu của bản cũ, vẫn
+  tải bản mới nhất làm văn bản gốc và nói rõ: bản họ nêu đã có bản thay thế. Chỉ
+  tải thêm bản cũ nếu họ cần (ví dụ để xử lý vụ việc phát sinh trước ngày bản mới
+  có hiệu lực).
+- **Chưa có hiệu lực.** Nếu script báo `NOT YET IN FORCE`, bản mới nhất chưa áp
+  dụng: tải cả bản mới lẫn bản đang có hiệu lực, và nêu rõ ngày chuyển giao.
+- **Văn bản sửa đổi, bổ sung.** Trích yếu dạng "Luật sửa đổi, bổ sung một số điều
+  của ..." ban hành sau văn bản gốc là một phần của bộ: văn bản gốc phải đọc cùng
+  nó. Tìm cả "văn bản hợp nhất" (ký hiệu `VBHN`), nếu có thì tải kèm vì đó là bản
+  đã gộp sẵn các sửa đổi.
+- **Văn bản hướng dẫn.** Chỉ lấy văn bản thuộc nhóm `AFTER` và thật sự hướng dẫn
+  văn bản gốc. Trong nhóm đó, nếu hai văn bản cùng nội dung (cùng trích yếu, hoặc
+  văn bản sau ghi "thay thế", "sửa đổi, bổ sung Nghị định số ...") thì bản sau là
+  bản áp dụng; bản trước chỉ ghi vào file quan hệ, không tải, trừ khi nó chỉ bị
+  sửa một phần - khi đó tải cả hai.
+- **Nhóm `BEFORE`** hướng dẫn phiên bản luật cũ: không tải, nhưng ghi các văn bản
+  chính vào mục "không tải" của file quan hệ để người dùng biết chúng tồn tại.
+- **Khi cần bằng chứng chắc hơn** cho văn bản gốc hoặc một trường hợp mơ hồ: điều
+  khoản "Hiệu lực thi hành" ở cuối văn bản ghi rõ nó thay thế, bãi bỏ văn bản nào.
+  Dùng skill `han-scan-to-word` với `-Pages` cho vài trang cuối của file đã tải để
+  đọc điều khoản đó, rồi ghi vào cột "Căn cứ xác định".
+
+Đừng bao giờ viết "còn hiệu lực" như một sự thật đã kiểm chứng. Viết "theo các văn
+bản tìm được trên cổng Chính phủ, chưa thấy văn bản thay thế" và nhắc người dùng đối
+chiếu ở vbpl.vn.
+
+### Vì sao phải thêm từ khóa
+
+Lệnh `related` tìm theo tên và số hiệu của văn bản gốc, nên bỏ sót các văn bản
+hướng dẫn không nhắc tên luật trong trích yếu. Ví dụ với Bộ luật Lao động 2019,
+tìm theo tên chỉ ra Nghị định 145/2020/NĐ-CP; nghị định về tuổi nghỉ hưu hay về
+lao động nước ngoài có trích yếu không chứa chữ "Bộ luật Lao động".
+
+Để bù lại, hãy liệt kê các mảng nội dung chính của văn bản gốc và chạy `related`
+hoặc `search` với từng cụm ("tuổi nghỉ hưu", "lao động nước ngoài", "tiền lương tối
+thiểu", "xử phạt vi phạm hành chính" kèm lĩnh vực...). Hiểu biết sẵn có của bạn về
+văn bản nào hướng dẫn luật nào là **đầu mối để tìm**, không phải kết quả: mỗi số
+hiệu bạn nhớ phải được tìm thấy trên cổng thì mới được đưa vào bộ, và trí nhớ có
+thể đã cũ - một nghị định bạn nhớ có thể đã bị thay thế sau thời điểm bạn biết.
+
+Vì vậy bộ văn bản **không được cam kết là đầy đủ**. Ghi điều này vào file quan hệ.
+
+## File quan hệ `QUAN-HE-VAN-BAN.md`
+
+Viết bằng tiếng Việt, đặt ở gốc thư mục bộ văn bản, theo đúng khung sau. File này
+là thứ người dùng mở đầu tiên, nên nó phải tự đứng được: ai đọc cũng hiểu bộ văn bản
+gồm gì, văn bản nào phụ thuộc văn bản nào, và điều gì cần cẩn thận.
+
+```markdown
+# Quan hệ giữa các văn bản: <tên văn bản gốc>
+
+Lập ngày <ngày>. Nguồn: vanban.chinhphu.vn.
+
+## Văn bản gốc
+
+| Số hiệu | Tên | Ngày ban hành | Có hiệu lực từ | Thư mục |
+|---|---|---|---|---|
+
+## Lưu ý đặc biệt
+
+- <mỗi lưu ý một dòng; nếu không có thì ghi "Không có lưu ý đặc biệt.">
+
+## Sơ đồ quan hệ
+
+<cây chữ: văn bản gốc ở trên, văn bản sửa đổi và hướng dẫn thụt vào bên dưới,
+văn bản hướng dẫn nghị định thụt thêm một cấp>
+
+## Các văn bản đã tải
+
+| Số hiệu | Tên / trích yếu | Ngày ban hành | Có hiệu lực từ | Quan hệ với văn bản gốc | Căn cứ xác định | Thư mục |
+|---|---|---|---|---|---|---|
+
+## Văn bản liên quan không tải
+
+| Số hiệu | Trích yếu | Ngày ban hành | Lý do không tải |
+|---|---|---|---|
+
+## Giới hạn của bản tổng hợp này
+
+- Tình trạng hiệu lực là suy luận từ ngày ban hành và trích yếu, không phải dữ liệu
+  chính thức. Đối chiếu tại vbpl.vn trước khi trích dẫn.
+- Danh sách có thể chưa đầy đủ: <nêu các mảng đã tìm và các từ khóa đã dùng>.
+```
+
+Cột **Quan hệ với văn bản gốc** dùng một trong các cách gọi sau để người dùng lọc
+được:
+
+| Quan hệ | Khi nào dùng |
+|---|---|
+| Sửa đổi, bổ sung văn bản gốc | Văn bản cùng cấp ban hành sau, thay đổi một số điều của văn bản gốc. |
+| Văn bản hợp nhất | Bản gộp văn bản gốc với các lần sửa đổi. |
+| Quy định chi tiết / hướng dẫn thi hành | Nghị định, thông tư cụ thể hóa các điều của văn bản gốc. |
+| Hướng dẫn văn bản hướng dẫn | Thông tư hướng dẫn một nghị định trong bộ (quan hệ cấp hai). |
+| Xử phạt vi phạm | Nghị định xử phạt vi phạm hành chính trong lĩnh vực của văn bản gốc. |
+| Văn bản gốc thay thế văn bản này | Phiên bản trước của văn bản gốc (thường nằm ở mục không tải). |
+| Liên quan khác | Có dẫn chiếu tới văn bản gốc nhưng không thuộc các loại trên; nêu rõ là gì. |
+
+Cột **Căn cứ xác định** ghi vì sao bạn kết luận quan hệ đó: "trích yếu ghi rõ",
+"điều khoản thi hành của văn bản (đã đọc)", hoặc "suy luận từ nội dung và ngày ban
+hành". Người dùng cần biết kết luận nào chắc, kết luận nào là phán đoán.
+
+## Lưu ý đặc biệt phải báo cho người dùng
+
+Những điều sau đây làm thay đổi cách người dùng được phép dựa vào bộ văn bản, nên
+phải nêu **cả trong câu trả lời lẫn trong file quan hệ**, không được để chìm trong
+bảng:
+
+- Văn bản gốc hoặc văn bản quan trọng trong bộ **chưa có hiệu lực**, kèm ngày bắt
+  đầu có hiệu lực.
+- Văn bản người dùng hỏi **đã có bản mới thay thế**, và bạn đã tải bản mới.
+- Văn bản gốc **đã bị sửa đổi** bởi văn bản khác: phải đọc cùng nhau.
+- Có **giai đoạn chuyển tiếp**: bản cũ và bản mới cùng tồn tại, hoặc văn bản hướng
+  dẫn của bản cũ còn được áp dụng tạm.
+- Văn bản mới nhưng **chưa thấy văn bản hướng dẫn** trên cổng.
+- Văn bản trong bộ **không có file đính kèm**, hoặc file tải về không hợp lệ.
+- Có văn bản bạn biết là liên quan nhưng **không tìm thấy trên cổng**.
+- Kết luận về hiệu lực hoặc quan hệ của một văn bản quan trọng chỉ là **phán đoán**.
+
+Nếu không có lưu ý nào, nói rõ là không có, thay vì bỏ trống.
 
 ## Khi tên người dùng đưa không khớp
 

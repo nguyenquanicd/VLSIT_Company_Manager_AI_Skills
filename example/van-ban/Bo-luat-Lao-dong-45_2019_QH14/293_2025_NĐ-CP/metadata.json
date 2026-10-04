@@ -1,0 +1,26 @@
+{
+    "docId":  "215832",
+    "soHieu":  "293/2025/NĐ-CP",
+    "tieuDe":  "Nghị định số 293/2025/NĐ-CP của Chính phủ: Quy định mức lương tối thiểu đối với người lao động làm việc theo hợp đồng lao động",
+    "nguon":  "https://vanban.chinhphu.vn/?pageid=27160\u0026docid=215832",
+    "ngayBanHanh":  "10-11-2025",
+    "ngayHieuLuc":  "01-01-2026",
+    "chuaCoHieuLuc":  false,
+    "thongTin":  {
+                     "Số ký hiệu":  "293/2025/NĐ-CP",
+                     "Ngày ban hành":  "10-11-2025",
+                     "Ngày có hiệu lực":  "01-01-2026",
+                     "Loại văn bản":  "Nghị định",
+                     "Cơ quan ban hành":  "Chính phủ",
+                     "Người ký":  "Hồ Đức Phớc",
+                     "Trích yếu":  "Quy định mức lương tối thiểu đối với người lao động làm việc theo hợp đồng lao động"
+                 },
+    "tepDinhKem":  [
+                       {
+                           "tep":  "293-cp.signed.pdf",
+                           "nguon":  "https://datafiles.chinhphu.vn/cpp/files/vbpq/2025/11/293-cp.signed.pdf",
+                           "bytes":  711910
+                       }
+                   ],
+    "taiLuc":  "2026-10-04T07:04:19+07:00"
+}

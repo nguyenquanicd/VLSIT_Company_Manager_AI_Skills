@@ -1,0 +1,26 @@
+{
+    "docId":  "201650",
+    "soHieu":  "135/2020/NĐ-CP",
+    "tieuDe":  "Nghị định số 135/2020/NĐ-CP của Chính phủ: Quy định về tuổi nghỉ hưu",
+    "nguon":  "https://vanban.chinhphu.vn/?pageid=27160\u0026docid=201650",
+    "ngayBanHanh":  "18-11-2020",
+    "ngayHieuLuc":  "01-01-2021",
+    "chuaCoHieuLuc":  false,
+    "thongTin":  {
+                     "Số ký hiệu":  "135/2020/NĐ-CP",
+                     "Ngày ban hành":  "18-11-2020",
+                     "Ngày có hiệu lực":  "01-01-2021",
+                     "Loại văn bản":  "Nghị định",
+                     "Cơ quan ban hành":  "Chính phủ",
+                     "Người ký":  "Nguyễn Xuân Phúc",
+                     "Trích yếu":  "Quy định về tuổi nghỉ hưu"
+                 },
+    "tepDinhKem":  [
+                       {
+                           "tep":  "135.signed.pdf",
+                           "nguon":  "https://datafiles.chinhphu.vn/cpp/files/vbpq/2020/11/135.signed.pdf",
+                           "bytes":  697036
+                       }
+                   ],
+    "taiLuc":  "2026-10-04T07:04:11+07:00"
+}

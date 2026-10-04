@@ -23,7 +23,7 @@
 [CmdletBinding()]
 param(
     [Parameter(Mandatory = $true, Position = 0)]
-    [ValidateSet('search', 'info', 'download')]
+    [ValidateSet('search', 'info', 'related', 'download')]
     [string]$Action,
 
     # search: free text or a document number
@@ -248,13 +248,54 @@ function Get-DocumentInfo {
     $code = ''
     if ($meta.Count -gt 0) { $code = @($meta.Values)[0] }
 
+    # The issue date is the second metadata row. The effective-date row is
+    # optional and carries its own id, so read it by that id, not by position.
+    $issued = ''
+    if ($meta.Count -gt 1) { $issued = @($meta.Values)[1] }
+    $effective = [regex]::Match($html, 'tr_ngaycohieuluc"[^>]*>\s*<td[^>]*>.*?</td>\s*<td[^>]*>\s*(\d[\d\-/]+)', 'Singleline').Groups[1].Value
+    $effectiveDate = ConvertTo-Date $effective
+    $notYetInForce = [bool]($effectiveDate -and $effectiveDate -gt (Get-Date).Date)
+
     return [pscustomobject][ordered]@{
-        docId    = $Id
-        soHieu   = $code
-        tieuDe   = $title
-        url      = $url
-        thongTin = $meta
-        files    = @($files | Select-Object -Unique)
+        docId         = $Id
+        soHieu        = $code
+        tieuDe        = $title
+        ngayBanHanh   = $issued
+        ngayHieuLuc   = $effective
+        chuaCoHieuLuc = $notYetInForce
+        url           = $url
+        thongTin      = $meta
+        files         = @($files | Select-Object -Unique)
+    }
+}
+
+function ConvertTo-Date {
+    # The portal writes dates as dd/MM/yyyy in lists and dd-MM-yyyy on detail pages.
+    param([string]$Text)
+    if ($Text -match '^\s*(\d{1,2})[-/](\d{1,2})[-/](\d{4})') {
+        try { return New-Object DateTime([int]$Matches[3], [int]$Matches[2], [int]$Matches[1]) } catch { }
+    }
+    return $null
+}
+
+function Resolve-DocumentCode {
+    # Turns a document number into portal ids. Only an exact (normalized) match
+    # counts: handing someone the wrong law is worse than handing none.
+    param([string]$Code)
+    $want = Get-NormalizedCode $Code
+    $hits = Search-Documents -Text $Code -Limit 50
+    $exact = @($hits | Where-Object { (Get-NormalizedCode $_.soHieu) -eq $want })
+    # The portal matches text literally, so "ND-CP" typed without the Vietnamese
+    # D finds nothing. Retry on the "number/year" part alone and let the
+    # normalized comparison pick the right row.
+    $numberPart = [regex]::Match($Code, '^\s*\d+[^/]*/\d{4}').Value.Trim()
+    if ($exact.Count -eq 0 -and $numberPart -and $numberPart -ne $Code.Trim()) {
+        $hits = Search-Documents -Text $numberPart -Limit 200
+        $exact = @($hits | Where-Object { (Get-NormalizedCode $_.soHieu) -eq $want })
+    }
+    return [pscustomobject]@{
+        ids        = @($exact | ForEach-Object { $_.docId })
+        candidates = @($hits | Select-Object -First 5 | ForEach-Object { "[$($_.docId)] $($_.soHieu) - $($_.trichYeu)" })
     }
 }
 
@@ -305,6 +346,9 @@ function Save-Document {
         soHieu    = $Info.soHieu
         tieuDe    = $Info.tieuDe
         nguon     = $Info.url
+        ngayBanHanh   = $Info.ngayBanHanh
+        ngayHieuLuc   = $Info.ngayHieuLuc
+        chuaCoHieuLuc = $Info.chuaCoHieuLuc
         thongTin  = $Info.thongTin
         tepDinhKem = @($saved | ForEach-Object { [ordered]@{ tep = [System.IO.Path]::GetFileName($_.path); nguon = $_.source; bytes = $_.bytes } })
         taiLuc    = (Get-Date).ToString('yyyy-MM-ddTHH:mm:sszzz')
@@ -316,6 +360,9 @@ function Save-Document {
         docId    = $Info.docId
         soHieu   = $Info.soHieu
         tieuDe   = $Info.tieuDe
+        ngayBanHanh   = $Info.ngayBanHanh
+        ngayHieuLuc   = $Info.ngayHieuLuc
+        chuaCoHieuLuc = $Info.chuaCoHieuLuc
         folder   = $folder
         files    = $saved
         problems = $problems
@@ -366,31 +413,82 @@ switch ($Action) {
         }
     }
 
+    'related' {
+        # Lists every document on the portal that mentions the base document by
+        # number or by name: amendments, implementing decrees and circulars,
+        # earlier and later versions. It only gathers candidates; deciding how
+        # each one relates to the base document is left to the reader, because
+        # that judgement needs the wording of the titles, not a pattern match.
+        $ids = Split-List $DocId
+        foreach ($code in (Split-List $SoHieu)) { $ids += (Resolve-DocumentCode $code).ids }
+        $ids = @($ids | Select-Object -Unique)
+        if ($ids.Count -ne 1) { throw "related needs exactly one base document (-DocId or -SoHieu); got $($ids.Count)." }
+
+        $base = Get-DocumentInfo -Id $ids[0]
+        $baseDate = ConvertTo-Date $base.ngayBanHanh
+        $name = $base.tieuDe
+        if ($name -match ':\s*(.+)$') { $name = $Matches[1].Trim() }
+        $terms = @($base.soHieu, $name)
+        if ($Keyword) { $terms += ($Keyword -split ';' | ForEach-Object { $_.Trim() }) }
+        # the portal's search box accepts at most 100 characters
+        $terms = @($terms | Where-Object { $_ } | ForEach-Object { if ($_.Length -gt 100) { $_.Substring(0, 100) } else { $_ } } | Select-Object -Unique)
+
+        $Loai = ''; $Year = 0
+        $limit = [Math]::Max($Top, 200)
+        $found = [ordered]@{}
+        foreach ($c in 1, 2) {
+            $Class = $c
+            foreach ($term in $terms) {
+                foreach ($hit in (Search-Documents -Text $term -Limit $limit)) {
+                    if ($hit.docId -eq $base.docId) { continue }
+                    if ($found.Contains($hit.docId)) {
+                        if ($found[$hit.docId].timThayBang -notcontains $term) { $found[$hit.docId].timThayBang += $term }
+                        continue
+                    }
+                    $hitDate = ConvertTo-Date $hit.ngayBanHanh
+                    $after = $null
+                    if ($hitDate -and $baseDate) { $after = ($hitDate -ge $baseDate) }
+                    $found[$hit.docId] = [pscustomobject][ordered]@{
+                        docId        = $hit.docId
+                        soHieu       = $hit.soHieu
+                        ngayBanHanh  = $hit.ngayBanHanh
+                        banHanhSauVanBanGoc = $after
+                        lop          = $c
+                        trichYeu     = $hit.trichYeu
+                        timThayBang  = @($term)
+                        soFile       = $hit.files.Count
+                        url          = $hit.url
+                        sortKey      = $hitDate
+                    }
+                }
+            }
+        }
+        $list = @($found.Values | Sort-Object sortKey -Descending | Select-Object * -ExcludeProperty sortKey)
+        Write-Result -Data ([ordered]@{ base = $base; searchTerms = $terms; count = $list.Count; candidates = $list }) -Text {
+            $line = "BASE [$($base.docId)] $($base.soHieu) | issued $($base.ngayBanHanh) | in force from $($base.ngayHieuLuc)"
+            if ($base.chuaCoHieuLuc) { $line += '  ** NOT YET IN FORCE **' }
+            $line
+            "     $($base.tieuDe)"
+            "Search terms: $($terms -join ' ; ')"
+            "$($list.Count) candidate(s), newest first. AFTER/BEFORE = issued after or before the base document; C1 = legal normative, C2 = directive."
+            foreach ($r in $list) {
+                $when = '?'
+                if ($r.banHanhSauVanBanGoc -eq $true) { $when = 'AFTER' } elseif ($r.banHanhSauVanBanGoc -eq $false) { $when = 'BEFORE' }
+                "[$($r.docId)] $($r.soHieu) | $($r.ngayBanHanh) | $when | C$($r.lop) | $($r.trichYeu)"
+            }
+        }
+    }
+
     'download' {
         $ids = Split-List $DocId
         $notFound = @()
-        # Resolve document numbers to ids. Only an exact (normalized) match is
-        # downloaded: handing someone the wrong law is worse than handing none.
         foreach ($code in (Split-List $SoHieu)) {
-            $want = Get-NormalizedCode $code
-            $hits = Search-Documents -Text $code -Limit 50
-            $exact = @($hits | Where-Object { (Get-NormalizedCode $_.soHieu) -eq $want })
-            # The portal matches text literally, so "ND-CP" typed without the
-            # Vietnamese D finds nothing. Retry on the "number/year" part alone and
-            # let the normalized comparison pick the right row.
-            $numberPart = [regex]::Match($code, '^\s*\d+[^/]*/\d{4}').Value.Trim()
-            if ($exact.Count -eq 0 -and $numberPart -and $numberPart -ne $code.Trim()) {
-                $hits = Search-Documents -Text $numberPart -Limit 200
-                $exact = @($hits | Where-Object { (Get-NormalizedCode $_.soHieu) -eq $want })
-            }
-            if ($exact.Count -eq 0) {
-                $notFound += [pscustomobject][ordered]@{
-                    soHieu     = $code
-                    candidates = @($hits | Select-Object -First 5 | ForEach-Object { "[$($_.docId)] $($_.soHieu) - $($_.trichYeu)" })
-                }
+            $resolved = Resolve-DocumentCode $code
+            if ($resolved.ids.Count -eq 0) {
+                $notFound += [pscustomobject][ordered]@{ soHieu = $code; candidates = $resolved.candidates }
                 continue
             }
-            $ids += $exact | ForEach-Object { $_.docId }
+            $ids += $resolved.ids
         }
         $ids = @($ids | Select-Object -Unique)
         if ($ids.Count -eq 0 -and $notFound.Count -eq 0) { throw 'download needs -SoHieu or -DocId.' }
@@ -399,6 +497,10 @@ switch ($Action) {
         Write-Result -Data @{ downloaded = $done; notFound = $notFound } -Text {
             foreach ($d in $done) {
                 "== [$($d.docId)] $($d.soHieu) - $($d.tieuDe)"
+                $force = "   issued: $($d.ngayBanHanh) | in force from: $($d.ngayHieuLuc)"
+                if (-not $d.ngayHieuLuc) { $force = "   issued: $($d.ngayBanHanh) | in force from: (not stated on the portal)" }
+                if ($d.chuaCoHieuLuc) { $force += '  ** NOT YET IN FORCE **' }
+                $force
                 "   folder: $($d.folder)"
                 foreach ($f in $d.files) { "   $($f.status): $([System.IO.Path]::GetFileName($f.path)) ($([Math]::Round($f.bytes / 1KB)) KB)" }
                 foreach ($p in $d.problems) { "   ! $p" }

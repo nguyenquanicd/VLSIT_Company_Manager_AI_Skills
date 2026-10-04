@@ -45,7 +45,12 @@ cần gõ tên skill.
 | [`han-scan-to-word`](.claude/skills/han-scan-to-word/SKILL.md) | Phân tích và chuyển PDF scan hoặc ảnh chụp tài liệu thành file Word (`.docx`) bằng OCR tiếng Việt (Tesseract). |
 
 Hai skill dùng nối tiếp được: tải văn bản về, rồi chuyển bản scan sang Word để tra
-cứu và soạn thảo. Nội dung `SKILL.md` của hai skill viết bằng tiếng Việt.
+cứu và soạn thảo.
+
+Quy ước ngôn ngữ của kho: `SKILL.md` và script chỉ viết bằng tiếng Anh chuyên ngành;
+README và các tài liệu hướng dẫn viết song ngữ Anh - Việt. Trợ lý vẫn trả lời bạn
+bằng ngôn ngữ bạn dùng, và file quan hệ `QUAN-HE-VAN-BAN.md` vẫn viết bằng tiếng
+Việt vì nó mô tả văn bản pháp luật Việt Nam.
 
 ### Yêu cầu
 
@@ -248,23 +253,23 @@ Rồi viết `SKILL.md` theo mẫu:
 ```markdown
 ---
 name: ten-skill
-description: Skill làm việc gì, và dùng khi nào - nêu rõ các tình huống, từ khóa mà người dùng hay nói.
+description: What the skill does and when to use it - name the situations and keywords users typically mention.
 ---
 
-# Tên skill
+# Skill title
 
-Mô tả ngắn skill làm gì và không làm gì.
+A short statement of what the skill does and does not do.
 
-## Quy trình
+## Workflow
 
-1. Bước đầu tiên. Nếu thiếu thông tin đầu vào thì hỏi người dùng.
-2. Bước tiếp theo, kèm lệnh cần chạy nếu có.
-3. Kiểm tra kết quả trước khi báo xong.
+1. First step. If required input is missing, ask the user.
+2. Next step, with the command to run if there is one.
+3. Check the result before reporting completion.
 
-## Kết quả
+## Output
 
-- Lưu ở đâu, tên file thế nào.
-- Báo lại cho người dùng những gì, kể cả phần chưa kiểm tra được.
+- Where the result is saved and how files are named.
+- What to report back to the user, including anything that could not be verified.
 ```
 
 Hai skill trong kho là ví dụ đầy đủ để tham khảo cách viết.
@@ -278,6 +283,9 @@ Một số điểm nên giữ khi viết skill:
   phần đầu file).
 - **Giải thích lý do** của từng yêu cầu thay vì chỉ ra lệnh; trợ lý xử lý tình huống
   lạ tốt hơn khi hiểu vì sao.
+- **Viết `SKILL.md` bằng tiếng Anh chuyên ngành**, kể cả `description`. Thuật ngữ
+  tiếng Việt chỉ giữ khi nó là dữ liệu thật (từ khóa tìm kiếm, tên văn bản, nội dung
+  file kết quả), và nên chú nghĩa tiếng Anh lần đầu xuất hiện.
 - **Không viết riêng cho một công cụ:** tránh nhắc tên Claude hay Codex, tránh ghi
   cú pháp gọi `/` hay `$` trong `SKILL.md`, để một bản dùng được cho cả hai.
 - **Skill phải nói thật về giới hạn:** không bịa nội dung thiếu, không báo "đã kiểm
@@ -395,8 +403,13 @@ Both tools also select a skill on their own when your request matches its
 | [`han-scan-to-word`](.claude/skills/han-scan-to-word/SKILL.md) | Analyzes a scanned PDF or a photographed document and converts it to an editable Word file (`.docx`) using Vietnamese OCR (Tesseract). |
 
 The two skills chain together: download a document, then convert the scan to Word
-for reference and drafting. The `SKILL.md` files of both skills are written in
-Vietnamese.
+for reference and drafting.
+
+Language convention of this repository: `SKILL.md` files and scripts are written in
+professional English only; the README and guides are bilingual, English and
+Vietnamese. The assistant still replies in the language you use, and the
+relationship file `QUAN-HE-VAN-BAN.md` is still written in Vietnamese because it
+describes Vietnamese legal documents.
 
 ### Requirements
 
@@ -636,6 +649,9 @@ Points worth keeping when writing a skill:
   (that breaks the file header).
 - **Explain the reason** behind each instruction instead of only giving orders; the
   assistant handles unusual cases better when it understands why.
+- **Write `SKILL.md` in professional English**, including the `description`. Keep
+  Vietnamese terms only where they are real data (search keywords, document names,
+  the content of output files), and gloss them in English on first use.
 - **Stay tool-neutral:** do not mention Claude or Codex, and do not write the `/` or
   `$` invocation syntax inside `SKILL.md`, so one file works for both tools.
 - **Be honest about limits:** a skill must not invent missing content or report

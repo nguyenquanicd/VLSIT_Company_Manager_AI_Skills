@@ -7,8 +7,8 @@
 ## Tiếng Việt
 
 Bộ skill cho Claude Code và OpenAI Codex phục vụ công việc quản lý, hành chính của
-công ty, kèm hướng dẫn để hiểu skill là gì, các cách kích hoạt và dùng, và cách tự xây dựng skill mới
-trên Windows.
+công ty, kèm hướng dẫn để hiểu skill là gì, các cách kích hoạt và dùng, và cách tự
+xây dựng skill mới trên Windows.
 
 ### Skill là gì?
 
@@ -41,7 +41,7 @@ cần gõ tên skill.
 
 | Skill | Công dụng |
 |---|---|
-| [`han-download-law-doc`](.claude/skills/han-download-law-doc/SKILL.md) | Tìm và tải file gốc (PDF ký số) của văn bản pháp luật Việt Nam từ Cổng Thông tin điện tử Chính phủ `vanban.chinhphu.vn`, kèm `metadata.json` ghi số hiệu, ngày ban hành, ngày hiệu lực, link nguồn. Mặc định tải trọn bộ: bản mới nhất của văn bản cần tìm, các nghị định, thông tư hướng dẫn và sửa đổi đang áp dụng, và file `QUAN-HE-VAN-BAN.md` mô tả quan hệ giữa chúng cùng các lưu ý đặc biệt. Ví dụ: [bộ văn bản Bộ luật Lao động](example/van-ban/Bo-luat-Lao-dong-45_2019_QH14/QUAN-HE-VAN-BAN.md). |
+| [`han-download-law-doc`](.claude/skills/han-download-law-doc/SKILL.md) | Tìm và tải file gốc (PDF ký số) của văn bản pháp luật Việt Nam từ Cổng Thông tin điện tử Chính phủ `vanban.chinhphu.vn`, kèm `metadata.json` ghi số hiệu, ngày ban hành, ngày hiệu lực, link nguồn. Mặc định tải trọn bộ: bản mới nhất của văn bản cần tìm, các nghị định, thông tư hướng dẫn và sửa đổi đang áp dụng, và file `QUAN-HE-VAN-BAN.md` mô tả quan hệ giữa chúng cùng các lưu ý đặc biệt. Ví dụ: [bộ Bộ luật Lao động](example/van-ban/Bo-luat-Lao-dong-45_2019_QH14/QUAN-HE-VAN-BAN.md) (9 văn bản), [bộ Luật Thương mại](example/van-ban/Luat-Thuong-mai-36_2005_QH11/QUAN-HE-VAN-BAN.md) (67 văn bản). |
 | [`han-scan-to-word`](.claude/skills/han-scan-to-word/SKILL.md) | Phân tích và chuyển PDF scan hoặc ảnh chụp tài liệu thành file Word (`.docx`) bằng OCR tiếng Việt (Tesseract). |
 
 Hai skill dùng nối tiếp được: tải văn bản về, rồi chuyển bản scan sang Word để tra
@@ -320,7 +320,10 @@ Tài liệu chính thức: [Codex skills](https://learn.chatgpt.com/docs/build-s
 ├── tools/
 │   └── sync-codex-skills.ps1
 ├── example/
-│   ├── van-ban/                 # ví dụ mẫu: Bộ luật Lao động đã tải và file Word đã chuyển
+│   ├── van-ban/
+│   │   ├── Bo-luat-Lao-dong-45_2019_QH14/   # ví dụ mẫu 1: 9 văn bản + file quan hệ
+│   │   ├── Luat-Thuong-mai-36_2005_QH11/    # ví dụ mẫu 2: 67 văn bản + file quan hệ
+│   │   └── 45_2019_QH14/                    # một văn bản tải riêng + bản Word chuyển từ bản scan
 │   └── TOM-TAT-VAN-DE.md        # các vấn đề đã gặp khi xây dựng skill và cách xử lý
 ├── dist/                        # gói Tesseract để đăng lên Releases (không đưa vào git)
 └── README.md
@@ -342,6 +345,14 @@ Tài liệu chính thức: [Codex skills](https://learn.chatgpt.com/docs/build-s
   trọng với PDF gốc và dùng PDF gốc khi trích dẫn chính thức.
 - **PDF đã có chữ thật** (bôi đen và copy được) không cần OCR: mở thẳng bằng Word
   rồi lưu thành `.docx`.
+- **Văn bản cũ có thể dùng font tiếng Việt kiểu cũ:** nhiều file RTF/DOC ban hành
+  trước khoảng năm 2007 (ví dụ Luật Thương mại 2005) được gõ bằng font TCVN3 như
+  `.VnTime`, `.VnArial`. Máy không cài các font này sẽ hiện ký tự lạ (ví dụ "Trõ
+  trêng hîp" thay cho "Trừ trường hợp") dù file không hỏng, và Word thường không đọc
+  được nội dung. Các skill hiện chưa tự chuyển mã. Thư mục
+  `example/van-ban/Luat-Thuong-mai-36_2005_QH11/36_2005_QH11/` có file gốc
+  `15224_l36qh.rtf` cùng bản đã chuyển sang Unicode (`15224_l36qh.docx`) để tham
+  khảo; bản chuyển này được làm riêng một lần, kho chưa có công cụ làm lại tự động.
 - **Chỉ chạy trên Windows:** script dùng Windows PowerShell 5.1 và bộ đọc PDF của
   Windows.
 
@@ -399,7 +410,7 @@ Both tools also select a skill on their own when your request matches its
 
 | Skill | Purpose |
 |---|---|
-| [`han-download-law-doc`](.claude/skills/han-download-law-doc/SKILL.md) | Finds and downloads the original files (digitally signed PDFs) of Vietnamese legal documents from the Government portal `vanban.chinhphu.vn`, with a `metadata.json` recording the document number, issue date, effective date and source link. By default it downloads the full set: the latest version of the requested document, the implementing decrees, circulars and amendments currently applied, and a `QUAN-HE-VAN-BAN.md` file describing how they relate, with any special notes. Example: [the Labor Code set](example/van-ban/Bo-luat-Lao-dong-45_2019_QH14/QUAN-HE-VAN-BAN.md). |
+| [`han-download-law-doc`](.claude/skills/han-download-law-doc/SKILL.md) | Finds and downloads the original files (digitally signed PDFs) of Vietnamese legal documents from the Government portal `vanban.chinhphu.vn`, with a `metadata.json` recording the document number, issue date, effective date and source link. By default it downloads the full set: the latest version of the requested document, the implementing decrees, circulars and amendments currently applied, and a `QUAN-HE-VAN-BAN.md` file describing how they relate, with any special notes. Examples: [the Labor Code set](example/van-ban/Bo-luat-Lao-dong-45_2019_QH14/QUAN-HE-VAN-BAN.md) (9 documents), [the Law on Commerce set](example/van-ban/Luat-Thuong-mai-36_2005_QH11/QUAN-HE-VAN-BAN.md) (67 documents). |
 | [`han-scan-to-word`](.claude/skills/han-scan-to-word/SKILL.md) | Analyzes a scanned PDF or a photographed document and converts it to an editable Word file (`.docx`) using Vietnamese OCR (Tesseract). |
 
 The two skills chain together: download a document, then convert the scan to Word
@@ -686,7 +697,10 @@ Official documentation: [Codex skills](https://learn.chatgpt.com/docs/build-skil
 ├── tools/
 │   └── sync-codex-skills.ps1
 ├── example/
-│   ├── van-ban/                 # sample output: the downloaded Labor Code and its Word conversion
+│   ├── van-ban/
+│   │   ├── Bo-luat-Lao-dong-45_2019_QH14/   # sample set 1: 9 documents + relationship file
+│   │   ├── Luat-Thuong-mai-36_2005_QH11/    # sample set 2: 67 documents + relationship file
+│   │   └── 45_2019_QH14/                    # one document downloaded alone + Word file converted from the scan
 │   └── TOM-TAT-VAN-DE.md        # problems met while building the skills and how they were solved (Vietnamese)
 ├── dist/                        # Tesseract bundle to publish under Releases (not in git)
 └── README.md
@@ -710,6 +724,16 @@ Official documentation: [Codex skills](https://learn.chatgpt.com/docs/build-skil
   original PDF.
 - **PDFs that already contain real text** (selectable and copyable) do not need OCR:
   open them directly in Word and save as `.docx`.
+- **Older documents may use legacy Vietnamese fonts:** many RTF/DOC files issued
+  before about 2007 (for example the 2005 Law on Commerce) were typed in TCVN3 fonts
+  such as `.VnTime` and `.VnArial`. On a machine without those fonts they show
+  garbage characters (for example "Trõ trêng hîp" instead of "Trừ trường hợp") even
+  though the file is intact, and Word usually cannot read the content. The skills do
+  not convert these automatically yet. The folder
+  `example/van-ban/Luat-Thuong-mai-36_2005_QH11/36_2005_QH11/` holds the original
+  `15224_l36qh.rtf` together with a copy converted to Unicode (`15224_l36qh.docx`)
+  for reference; that copy was made separately, once, and the repository has no tool
+  to repeat the conversion automatically.
 - **Windows only:** the scripts rely on Windows PowerShell 5.1 and the PDF renderer
   built into Windows.
 

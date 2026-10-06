@@ -340,6 +340,12 @@ Tài liệu chính thức: [Codex skills](https://learn.chatgpt.com/docs/build-s
 - **Bộ văn bản liên quan có thể chưa đầy đủ:** văn bản hướng dẫn không nhắc tên luật
   trong trích yếu chỉ tìm được qua từ khóa theo từng mảng nội dung. File quan hệ ghi
   lại những từ khóa đã dùng.
+- **Cổng Chính phủ thỉnh thoảng trả kết quả sai:** trang tìm kiếm đôi khi trả danh
+  sách rỗng và trang chi tiết đôi khi báo "không tìm thấy" dù văn bản có thật; script
+  tự thử lại vài lần trước khi tin kết quả rỗng. Mỗi truy vấn từ khóa chỉ trả tối đa
+  50 văn bản mới nhất, nên với `-Top` lớn hơn 50 script chia truy vấn theo năm và in
+  dòng `NOTE` nếu vẫn có thể còn thiếu. Văn bản dùng kết quả "không tìm thấy" cần thử
+  lại bằng cụm từ ngắn hơn hoặc bằng số hiệu.
 - **Bản Word là bản làm việc:** OCR có thể sai dấu, sai số, sai tiêu đề điều; bảng
   biểu không được kẻ lại; không giữ hình, con dấu, chữ ký. Luôn dò các con số quan
   trọng với PDF gốc và dùng PDF gốc khi trích dẫn chính thức.
@@ -718,6 +724,13 @@ Official documentation: [Codex skills](https://learn.chatgpt.com/docs/build-skil
 - **The related-document set may be incomplete:** implementing documents that do not
   name the law in their title are only found through topic keywords. The
   relationship file records the keywords that were used.
+- **The Government portal sometimes returns wrong answers:** the search page
+  occasionally returns an empty list, and a document page occasionally says "not
+  found" for a document that exists; the script retries a few times before believing
+  an empty result. A keyword query returns at most the 50 newest documents, so for
+  `-Top` above 50 the script splits the query by year and prints a `NOTE` line when
+  something may still be missing. Before concluding that a document does not exist,
+  retry with a shorter phrase or with the document number.
 - **The Word file is a working copy:** OCR can get diacritics, numbers and article
   headings wrong; tables are not rebuilt; images, stamps and signatures are not
   kept. Always check important figures against the original PDF, and cite from the

@@ -41,6 +41,10 @@ param(
     [int]$Year = 0,
     [int]$Top = 20,
 
+    # oldest year to look at when a broad query has to be split by year;
+    # 0 = default (1990 for search, the base document's year minus one for related)
+    [int]$FromYear = 0,
+
     # 1 = van ban quy pham phap luat (default), 2 = van ban chi dao dieu hanh
     [int]$Class = 1,
 
@@ -157,8 +161,9 @@ function Get-SafeName {
 }
 
 function Get-ListUrl {
+    param([string]$Type = '')
     $q = "classid=$Class&mode=1"
-    if ($Loai) { $q += "&typegroupid=$($TypeGroup[$Loai])" }
+    if ($Type) { $q += "&typegroupid=$($TypeGroup[$Type])" }
     return "$BaseUrl/he-thong-van-ban?$q"
 }
 
@@ -185,41 +190,107 @@ function ConvertFrom-ResultPage {
     return , $results
 }
 
-function Search-Documents {
-    param([string]$Text, [int]$Limit)
+# The portal's keyword search returns at most 50 rows - the footer of the result
+# grid reads "1 - 50 | 50" - and offers no pager, so a query that matches more
+# documents is silently cut to the 50 newest. Search-One runs one such query.
+# Search-Documents works around the cap by splitting a broad query by year (and,
+# for a year that is itself full, by document type), and sets $script:SearchCapped
+# when it still could not see everything.
+$script:SearchCapped = $false
+$script:FormPages = @{}
+$script:ResultCap = 50
 
-    $listUrl = Get-ListUrl
-    $page = Get-Html -Url $listUrl
+function Search-One {
+    param([string]$Text, [int]$YearFilter, [string]$TypeFilter)
 
-    # The search box belongs to an ASP.NET control whose id prefix can change when
-    # the portal is redeployed, so discover it instead of hard-coding it.
-    $m = [regex]::Match($page, 'name="(ctrl_\d+_\d+)\$txtSearchKeyword"')
-    if (-not $m.Success) { throw 'Search form not found on vanban.chinhphu.vn - the page layout may have changed.' }
-    $prefix = $m.Groups[1].Value
+    $listUrl = Get-ListUrl -Type $TypeFilter
 
-    $pageSize = 50
-    foreach ($size in 50, 100, 200, 500) { $pageSize = $size; if ($size -ge $Limit) { break } }
+    # The portal intermittently answers a valid query with an empty grid (HTTP 200,
+    # roughly one request in five in testing). Posting the same form again usually
+    # returns the rows, but not always, so every retry starts from a fresh copy of
+    # the search form. A genuine "no result" stays empty through all attempts.
+    $rows = @()
+    for ($attempt = 1; $attempt -le 4; $attempt++) {
+        # one GET per list URL is enough while results come back: the form it
+        # returns can be posted repeatedly
+        if ($attempt -gt 1) { $script:FormPages.Remove($listUrl) }
+        if (-not $script:FormPages.ContainsKey($listUrl)) { $script:FormPages[$listUrl] = Get-Html -Url $listUrl }
+        $page = $script:FormPages[$listUrl]
 
-    $fields = [ordered]@{}
-    foreach ($im in [regex]::Matches($page, '<input[^>]*type="hidden"[^>]*>')) {
-        $name = [regex]::Match($im.Value, 'name="([^"]*)"').Groups[1].Value
-        if (-not $name) { continue }
-        $fields[$name] = [System.Web.HttpUtility]::HtmlDecode([regex]::Match($im.Value, 'value="([^"]*)"').Groups[1].Value)
+        # The search box belongs to an ASP.NET control whose id prefix can change when
+        # the portal is redeployed, so discover it instead of hard-coding it.
+        $m = [regex]::Match($page, 'name="(ctrl_\d+_\d+)\$txtSearchKeyword"')
+        if (-not $m.Success) { throw 'Search form not found on vanban.chinhphu.vn - the page layout may have changed.' }
+        $prefix = $m.Groups[1].Value
+
+        $fields = [ordered]@{}
+        foreach ($im in [regex]::Matches($page, '<input[^>]*type="hidden"[^>]*>')) {
+            $name = [regex]::Match($im.Value, 'name="([^"]*)"').Groups[1].Value
+            if (-not $name) { continue }
+            $fields[$name] = [System.Web.HttpUtility]::HtmlDecode([regex]::Match($im.Value, 'value="([^"]*)"').Groups[1].Value)
+        }
+        $fields['__EVENTTARGET'] = ''
+        $fields['__EVENTARGUMENT'] = ''
+        $fields["$prefix`$txtSearchKeyword"] = $Text
+        $fields["$prefix`$drdDocCategory"] = '0'
+        $fields["$prefix`$drdDocOrg"] = '0'
+        $fields["$prefix`$drdDocYear"] = [string]$YearFilter
+        $fields["$prefix`$drdRecordPerPage"] = '50'
+        # value of the submit button, "Tim kiem" with Vietnamese diacritics
+        $fields["$prefix`$btnSearch"] = [System.Web.HttpUtility]::UrlDecode('T%C3%ACm%20ki%E1%BA%BFm')
+
+        $pairs = foreach ($k in $fields.Keys) { (ConvertTo-UrlEncoded $k) + '=' + (ConvertTo-UrlEncoded $fields[$k]) }
+        $rows = ConvertFrom-ResultPage (Get-Html -Url $listUrl -Body ($pairs -join '&'))
+        if ($rows.Count -gt 0) { break }
+        Start-Sleep -Milliseconds 700
     }
-    $fields['__EVENTTARGET'] = ''
-    $fields['__EVENTARGUMENT'] = ''
-    $fields["$prefix`$txtSearchKeyword"] = $Text
-    $fields["$prefix`$drdDocCategory"] = '0'
-    $fields["$prefix`$drdDocOrg"] = '0'
-    $fields["$prefix`$drdDocYear"] = [string]$Year
-    $fields["$prefix`$drdRecordPerPage"] = [string]$pageSize
-    # value of the submit button, "Tim kiem" with Vietnamese diacritics
-    $fields["$prefix`$btnSearch"] = [System.Web.HttpUtility]::UrlDecode('T%C3%ACm%20ki%E1%BA%BFm')
+    return , $rows
+}
 
-    $pairs = foreach ($k in $fields.Keys) { (ConvertTo-UrlEncoded $k) + '=' + (ConvertTo-UrlEncoded $fields[$k]) }
-    $html = Get-Html -Url $listUrl -Body ($pairs -join '&')
+function Search-Documents {
+    param([string]$Text, [int]$Limit, [int]$StopYear = 1990)
 
-    $all = ConvertFrom-ResultPage $html
+    $script:SearchCapped = $false
+    $rows = New-Object System.Collections.Generic.List[object]
+    $seen = @{}
+    $merge = {
+        param($list)
+        foreach ($r in $list) { if (-not $seen.ContainsKey($r.docId)) { $seen[$r.docId] = $true; $rows.Add($r) } }
+    }
+
+    $first = Search-One -Text $Text -YearFilter $Year -TypeFilter $Loai
+    & $merge $first
+    $full = ($first.Count -ge $script:ResultCap)
+
+    if ($full -and $Limit -gt $script:ResultCap) {
+        if ($Year -ne 0) {
+            # the caller fixed one year; there is nothing finer to split by except type
+            $script:SearchCapped = $true
+        }
+        else {
+            # split by year, newest first, until enough rows have been collected
+            $rows.Clear(); $seen.Clear()
+            for ($y = (Get-Date).Year; $y -ge $StopYear -and $rows.Count -lt $Limit; $y--) {
+                $inYear = Search-One -Text $Text -YearFilter $y -TypeFilter $Loai
+                if ($inYear.Count -ge $script:ResultCap) {
+                    if ($Class -eq 1 -and -not $Loai) {
+                        # a full year: split it by document type as well
+                        $byType = @($inYear)
+                        foreach ($t in $TypeGroup.Keys) {
+                            $part = Search-One -Text $Text -YearFilter $y -TypeFilter $t
+                            if ($part.Count -ge $script:ResultCap) { $script:SearchCapped = $true }
+                            $byType += $part
+                        }
+                        $inYear = $byType
+                    }
+                    else { $script:SearchCapped = $true }
+                }
+                & $merge ($inYear | Sort-Object { ConvertTo-Date $_.ngayBanHanh } -Descending)
+            }
+        }
+    }
+
+    $all = $rows.ToArray()
     if ($all.Count -gt $Limit) { $all = $all[0..($Limit - 1)] }
     return , $all
 }
@@ -228,9 +299,23 @@ function Get-DocumentInfo {
     param([string]$Id)
     if ($Id -notmatch '^\d+$') { throw "DocId must be a number, got '$Id'." }
     $url = "$BaseUrl/?pageid=27160&docid=$Id"
-    $html = Get-Html -Url $url
 
-    $title = ConvertFrom-HtmlText ([regex]::Match($html, '<h4 class="title">(.*?)</h4>', 'Singleline').Groups[1].Value)
+    # The portal sometimes answers a valid id with the page "Khong tim thay van ban
+    # nay" (document not found) and keeps answering that for the same address for
+    # tens of seconds, apparently from a cache. The address the search grid links
+    # to carries a classid parameter and is not affected, so rotate through the
+    # address forms and only believe "not found" after all of them failed twice.
+    $notFoundText = 'Kh' + [char]0x00F4 + 'ng t' + [char]0x00EC + 'm th' + [char]0x1EA5 + 'y v' + [char]0x0103 + 'n b' + [char]0x1EA3 + 'n n' + [char]0x00E0 + 'y'
+    $forms = @("$url&classid=1", "$url&classid=2", $url)
+    $tries = 6
+    for ($attempt = 0; $attempt -lt $tries; $attempt++) {
+        $html = Get-Html -Url $forms[$attempt % $forms.Count]
+        $title = ConvertFrom-HtmlText ([regex]::Match($html, '<h4 class="title">(.*?)</h4>', 'Singleline').Groups[1].Value)
+        if ($title -and $title -notlike "*$notFoundText*") { break }
+        Start-Sleep -Milliseconds 700
+    }
+    if (-not $title -or $title -like "*$notFoundText*") { throw "No document found for docid $Id (the portal answered 'not found' for $tries requests)." }
+
     $meta = [ordered]@{}
     $rows = [regex]::Matches($html, '<td class="col1"[^>]*>(.*?)</td>\s*<td[^>]*>(.*?)</td>', 'Singleline')
     foreach ($r in $rows) {
@@ -389,13 +474,17 @@ switch ($Action) {
 
     'search' {
         if (-not $Keyword) { throw 'search needs -Keyword.' }
-        $found = Search-Documents -Text $Keyword -Limit $Top
-        Write-Result -Data @{ keyword = $Keyword; count = $found.Count; results = $found } -Text {
+        $stopYear = 1990
+        if ($FromYear -gt 0) { $stopYear = $FromYear }
+        $found = Search-Documents -Text $Keyword -Limit $Top -StopYear $stopYear
+        $capped = $script:SearchCapped
+        Write-Result -Data ([ordered]@{ keyword = $Keyword; count = $found.Count; incomplete = $capped; results = $found }) -Text {
             if ($found.Count -eq 0) { "No result for '$Keyword' on vanban.chinhphu.vn."; return }
             "$($found.Count) result(s) for '$Keyword':"
             foreach ($r in $found) {
                 "[$($r.docId)] $($r.soHieu) | $($r.ngayBanHanh) | $($r.trichYeu) | files: $($r.files.Count)"
             }
+            if ($capped) { 'NOTE: the portal cuts a query at 50 rows; at least one year or type still hit that limit, so the list may be incomplete. Narrow the keyword or add -Loai / -Year.' }
         }
     }
 
@@ -435,11 +524,18 @@ switch ($Action) {
 
         $Loai = ''; $Year = 0
         $limit = [Math]::Max($Top, 200)
+        # look back to a year before the base document: older documents belong to
+        # the previous version of the law and are rarely wanted
+        $stopYear = 1990
+        if ($FromYear -gt 0) { $stopYear = $FromYear } elseif ($baseDate) { $stopYear = $baseDate.Year - 1 }
+        $incomplete = $false
         $found = [ordered]@{}
         foreach ($c in 1, 2) {
             $Class = $c
             foreach ($term in $terms) {
-                foreach ($hit in (Search-Documents -Text $term -Limit $limit)) {
+                $hitsForTerm = Search-Documents -Text $term -Limit $limit -StopYear $stopYear
+                if ($script:SearchCapped) { $incomplete = $true }
+                foreach ($hit in $hitsForTerm) {
                     if ($hit.docId -eq $base.docId) { continue }
                     if ($found.Contains($hit.docId)) {
                         if ($found[$hit.docId].timThayBang -notcontains $term) { $found[$hit.docId].timThayBang += $term }
@@ -464,12 +560,13 @@ switch ($Action) {
             }
         }
         $list = @($found.Values | Sort-Object sortKey -Descending | Select-Object * -ExcludeProperty sortKey)
-        Write-Result -Data ([ordered]@{ base = $base; searchTerms = $terms; count = $list.Count; candidates = $list }) -Text {
+        Write-Result -Data ([ordered]@{ base = $base; searchTerms = $terms; searchedFromYear = $stopYear; incomplete = $incomplete; count = $list.Count; candidates = $list }) -Text {
             $line = "BASE [$($base.docId)] $($base.soHieu) | issued $($base.ngayBanHanh) | in force from $($base.ngayHieuLuc)"
             if ($base.chuaCoHieuLuc) { $line += '  ** NOT YET IN FORCE **' }
             $line
             "     $($base.tieuDe)"
-            "Search terms: $($terms -join ' ; ')"
+            "Search terms: $($terms -join ' ; ')   (documents issued from $stopYear onward)"
+            if ($incomplete) { 'NOTE: the portal cuts a query at 50 rows; for at least one term a year or type still hit that limit, so the list may be incomplete. Re-run with narrower -Keyword phrases.' }
             "$($list.Count) candidate(s), newest first. AFTER/BEFORE = issued after or before the base document; C1 = legal normative, C2 = directive."
             foreach ($r in $list) {
                 $when = '?'

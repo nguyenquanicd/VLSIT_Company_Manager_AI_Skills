@@ -55,12 +55,24 @@ Each result line reads `[docId] số hiệu | issue date | trích yếu | files:
 
 | Parameter | Meaning |
 |---|---|
-| `-Keyword` | A document number or a phrase from the trích yếu. The portal matches literal strings, so type Vietnamese **with diacritics** and use a short, distinctive phrase ("dữ liệu cá nhân" works better than a long sentence). |
+| `-Keyword` | A document number or a phrase from the trích yếu. Use a short, distinctive phrase ("dữ liệu cá nhân" works better than a long sentence) and type Vietnamese with diacritics. The portal ignores diacritics and matches word by word, so a short phrase can pull in unrelated documents ("bán dẫn" also matches "Ban Dân tộc"); decide relevance from the trích yếu, not from the fact that a row was returned. |
 | `-Loai` | Document type: `hienphap` (constitution), `sacluat` (decree-law), `luat` (laws and ordinances), `nghidinh` (decrees), `quyetdinh` (decisions), `thongtu` (circulars). Empty = all types. |
 | `-Year` | Year of issue. |
-| `-Top` | Maximum number of results (default 20, maximum 500). |
+| `-Top` | Maximum number of results (default 20). The portal itself returns at most 50 rows per keyword query and has no second page, so for `-Top` above 50 the script splits the query by year (newest first) and, for a year that is still full, by document type, until enough rows are collected. This takes a minute or more for a broad keyword; narrow the keyword instead when you can. |
+| `-FromYear` | Oldest year the splitting reaches back to (default 1990 for `search`; the base document's year minus one for `related`). |
 | `-Class` | `1` = legal normative documents (default). `2` = directive and administrative documents (directives, official telegrams, official letters, individual decisions of the Prime Minister). If nothing is found in class 1, try class 2. |
 | `-Json` | Emit JSON instead of text, for further processing. |
+
+Two behaviours of the portal that affect how far you can trust a search:
+
+- **A `NOTE: ... may be incomplete` line** means at least one year or document type
+  still returned the portal's maximum of 50 rows, so documents may be missing. Re-run
+  with narrower keyword phrases, or add `-Loai` / `-Year`.
+- **"No result" is not always final.** The portal sometimes answers a valid query with
+  an empty list (roughly one request in five in testing); the script re-posts an empty
+  query up to three times before reporting no result. A long phrase can still come back
+  empty because the portal times out, so before concluding that a document does not
+  exist, retry with a shorter phrase or with the document number.
 
 ### 2. `info`
 
@@ -132,6 +144,11 @@ where applicable. Each following line is a candidate:
 The script only **gathers candidates**. Working out how each one relates to the base
 document is your job, based on the wording of the trích yếu.
 
+`related` runs every search term in both classes and splits broad terms by year, so it
+takes several minutes when you pass four or more keywords (about five minutes for
+two keywords on a 2025 law in testing). Run it in the background and tell the user it
+is working.
+
 ## Workflow
 
 By default the user needs the **complete set**, not a single file: the document
@@ -164,6 +181,30 @@ explicitly that they need just that one.
 7. **Report**: the base document (number, name, issue date, effective date), the
    number of documents downloaded per group, links to the folder and the
    relationship file, and **every special note**.
+
+### When the user names a topic, not a document
+
+A request such as "semiconductor technology" has no single base document, so the
+topic itself is the base. The workflow changes in four ways:
+
+- **Search the topic under several phrasings, in both classes.** Titles rarely use the
+  user's wording ("vi mạch" matched nothing, while "bán dẫn" and "chip bán dẫn" did).
+  Try the synonyms, the official term, and the English or colloquial form.
+- **Find the framework law, then read its implementation plan.** Each major law is
+  followed by a Prime Minister's decision of the form "Kế hoạch triển khai thi hành
+  Luật ..." (plan for implementing the law) that lists the decrees and circulars the
+  law requires. Read it (OCR it with `han-scan-to-word`) and use it as the checklist of
+  implementing documents to find on the portal.
+- **Verify framework laws by reading, not by title.** Tax, intellectual property,
+  high-technology and strategic-technology documents often matter to a topic without
+  naming it. Download such candidates to a scratch folder, OCR them, search the text
+  for the topic's terms, and include a candidate only if the term appears. Record the
+  page in the "Căn cứ xác định" column; a document you could not verify goes under "not
+  downloaded" with that reason.
+- **Make the relationship file topic-shaped.** The "Văn bản gốc" table may have several
+  rows (the law, the strategy), and the downloaded-documents table is grouped by kind:
+  law, decrees, circulars, strategies and programmes, steering and administrative
+  documents, and verified framework documents.
 
 ## Always take the latest version in force
 
@@ -317,9 +358,10 @@ section empty.
 
 Users usually remember a document name approximately: misspelt, without diacritics,
 by a colloquial name ("luật bảo vệ thông tin cá nhân" instead of "Luật Bảo vệ dữ
-liệu cá nhân"), or with the wrong number or year. The portal matches literal
-strings, so one failed search does not mean the document does not exist. Before
-reporting "not found", try similar names yourself:
+liệu cá nhân"), or with the wrong number or year. The portal matches words loosely
+and sometimes returns an empty list for a valid query, so one failed search does not
+mean the document does not exist. Before reporting "not found", try similar names
+yourself:
 
 - **Reduce to the core phrase**: drop the document-type word and filler ("Luật",
   "Nghị định về", "quy định") and keep the distinctive part - "dữ liệu cá nhân",

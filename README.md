@@ -761,3 +761,8 @@ release tagged `tesseract-portable-5.4.0` in this repository. The file is built 
 SHA-256 before unpacking it, so if you replace the zip you must update
 `$script:BundleSha256` in `scan2word.ps1` and run the Codex sync command again. The
 bundle contains Tesseract 5.4.0 (Apache 2.0 license, `LICENSE` file included).
+
+#Authors
+Hoang Quang
+Ngoc Han
+Quan Nguyen

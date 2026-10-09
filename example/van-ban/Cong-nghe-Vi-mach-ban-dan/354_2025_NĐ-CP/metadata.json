@@ -1,0 +1,26 @@
+{
+    "docId":  "216385",
+    "soHieu":  "354/2025/NĐ-CP",
+    "tieuDe":  "Nghị định số 354/2025/NĐ-CP của Chính phủ: Quy định về khu công nghệ số tập trung",
+    "nguon":  "https://vanban.chinhphu.vn/?pageid=27160\u0026docid=216385",
+    "ngayBanHanh":  "31-12-2025",
+    "ngayHieuLuc":  "01-01-2026",
+    "chuaCoHieuLuc":  false,
+    "thongTin":  {
+                     "Số ký hiệu":  "354/2025/NĐ-CP",
+                     "Ngày ban hành":  "31-12-2025",
+                     "Ngày có hiệu lực":  "01-01-2026",
+                     "Loại văn bản":  "Nghị định",
+                     "Cơ quan ban hành":  "Chính phủ",
+                     "Người ký":  "Nguyễn Chí Dũng",
+                     "Trích yếu":  "Quy định về khu công nghệ số tập trung"
+                 },
+    "tepDinhKem":  [
+                       {
+                           "tep":  "354-cp.signed.pdf",
+                           "nguon":  "https://datafiles.chinhphu.vn/cpp/files/vbpq/2026/01/354-cp.signed.pdf",
+                           "bytes":  858202
+                       }
+                   ],
+    "taiLuc":  "2026-10-06T23:36:18+07:00"
+}

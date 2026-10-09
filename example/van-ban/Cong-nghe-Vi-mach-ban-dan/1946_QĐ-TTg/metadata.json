@@ -1,0 +1,25 @@
+{
+    "docId":  "215239",
+    "soHieu":  "1946/QĐ-TTg",
+    "tieuDe":  "Quyết định số 1946/QĐ-TTg của Thủ tướng Chính phủ: Ban hành Kế hoạch triển khai thi hành Luật Công nghiệp công nghệ số",
+    "nguon":  "https://vanban.chinhphu.vn/?pageid=27160\u0026docid=215239",
+    "ngayBanHanh":  "09-09-2025",
+    "ngayHieuLuc":  "",
+    "chuaCoHieuLuc":  false,
+    "thongTin":  {
+                     "Số ký hiệu":  "1946/QĐ-TTg",
+                     "Ngày ban hành":  "09-09-2025",
+                     "Loại văn bản":  "Quyết định",
+                     "Cơ quan ban hành":  "Thủ tướng Chính phủ",
+                     "Người ký":  "Nguyễn Chí Dũng",
+                     "Trích yếu":  "Ban hành Kế hoạch triển khai thi hành Luật Công nghiệp công nghệ số"
+                 },
+    "tepDinhKem":  [
+                       {
+                           "tep":  "1946-ttg.signed.pdf",
+                           "nguon":  "https://datafiles.chinhphu.vn/cpp/files/vbpq/2025/9/1946-ttg.signed.pdf",
+                           "bytes":  531885
+                       }
+                   ],
+    "taiLuc":  "2026-10-06T23:30:56+07:00"
+}

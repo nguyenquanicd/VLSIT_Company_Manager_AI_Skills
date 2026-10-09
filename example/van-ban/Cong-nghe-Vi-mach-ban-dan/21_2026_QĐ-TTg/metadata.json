@@ -1,0 +1,26 @@
+{
+    "docId":  "218002",
+    "soHieu":  "21/2026/QĐ-TTg",
+    "tieuDe":  "Quyết định số 21/2026/QĐ-TTg của Thủ tướng Chính phủ: Ban hành Danh mục công nghệ chiến lược và Danh mục sản phẩm công nghệ chiến lược",
+    "nguon":  "https://vanban.chinhphu.vn/?pageid=27160\u0026docid=218002",
+    "ngayBanHanh":  "30-04-2026",
+    "ngayHieuLuc":  "01-07-2026",
+    "chuaCoHieuLuc":  false,
+    "thongTin":  {
+                     "Số ký hiệu":  "21/2026/QĐ-TTg",
+                     "Ngày ban hành":  "30-04-2026",
+                     "Ngày có hiệu lực":  "01-07-2026",
+                     "Loại văn bản":  "Quyết định",
+                     "Cơ quan ban hành":  "Thủ tướng Chính phủ",
+                     "Người ký":  "Hồ Quốc Dũng",
+                     "Trích yếu":  "Ban hành Danh mục công nghệ chiến lược và Danh mục sản phẩm công nghệ chiến lược"
+                 },
+    "tepDinhKem":  [
+                       {
+                           "tep":  "21-qd-ttg.signed.pdf",
+                           "nguon":  "https://datafiles.chinhphu.vn/cpp/files/vbpq/2026/4/21-qd-ttg.signed.pdf",
+                           "bytes":  223693
+                       }
+                   ],
+    "taiLuc":  "2026-10-06T23:31:28+07:00"
+}

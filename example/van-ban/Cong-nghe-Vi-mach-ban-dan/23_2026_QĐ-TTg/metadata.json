@@ -1,0 +1,26 @@
+{
+    "docId":  "218111",
+    "soHieu":  "23/2026/QĐ-TTg",
+    "tieuDe":  "Quyết định số 23/2026/QĐ-TTg của Thủ tướng Chính phủ: Ban hành Danh mục công nghệ cao được ưu tiên đầu tư phát triển và Danh mục sản phẩm công nghệ cao được khuyến khích phát triển",
+    "nguon":  "https://vanban.chinhphu.vn/?pageid=27160\u0026docid=218111",
+    "ngayBanHanh":  "15-05-2026",
+    "ngayHieuLuc":  "01-07-2026",
+    "chuaCoHieuLuc":  false,
+    "thongTin":  {
+                     "Số ký hiệu":  "23/2026/QĐ-TTg",
+                     "Ngày ban hành":  "15-05-2026",
+                     "Ngày có hiệu lực":  "01-07-2026",
+                     "Loại văn bản":  "Quyết định",
+                     "Cơ quan ban hành":  "Thủ tướng Chính phủ",
+                     "Người ký":  "Hồ Quốc Dũng",
+                     "Trích yếu":  "Ban hành Danh mục công nghệ cao được ưu tiên đầu tư phát triển và Danh mục sản phẩm công nghệ cao được khuyến khích phát triển"
+                 },
+    "tepDinhKem":  [
+                       {
+                           "tep":  "23-ttg.signed.pdf",
+                           "nguon":  "https://datafiles.chinhphu.vn/cpp/files/vbpq/2026/5/23-ttg.signed.pdf",
+                           "bytes":  497789
+                       }
+                   ],
+    "taiLuc":  "2026-10-06T23:32:10+07:00"
+}

@@ -1,0 +1,25 @@
+{
+    "docId":  "217331",
+    "soHieu":  "156/TB-VPCP",
+    "tieuDe":  "Thông báo số 156/TB-VPCP của Văn phòng Chính phủ: Kết luận của Ban Chỉ đạo quốc gia về phát triển ngành công nghiệp bán dẫn tại Phiên họp thứ nhất năm 2026",
+    "nguon":  "https://vanban.chinhphu.vn/?pageid=27160\u0026docid=217331",
+    "ngayBanHanh":  "28-03-2026",
+    "ngayHieuLuc":  "",
+    "chuaCoHieuLuc":  false,
+    "thongTin":  {
+                     "Số ký hiệu":  "156/TB-VPCP",
+                     "Ngày ban hành":  "28-03-2026",
+                     "Loại văn bản":  "Thông báo",
+                     "Cơ quan ban hành":  "Văn phòng Chính phủ",
+                     "Người ký":  "Phạm Mạnh Cường",
+                     "Trích yếu":  "Kết luận của Ban Chỉ đạo quốc gia về phát triển ngành công nghiệp bán dẫn tại Phiên họp thứ nhất năm 2026"
+                 },
+    "tepDinhKem":  [
+                       {
+                           "tep":  "156-tb.signed.pdf",
+                           "nguon":  "https://datafiles.chinhphu.vn/cpp/files/vbpq/2026/3/156-tb.signed.pdf",
+                           "bytes":  342441
+                       }
+                   ],
+    "taiLuc":  "2026-10-06T23:31:24+07:00"
+}

@@ -1,0 +1,30 @@
+{
+    "docId":  "219464",
+    "soHieu":  "481/TB-VPCP",
+    "tieuDe":  "Thông báo số 481/TB-VPCP của Văn phòng Chính phủ: Kết luận của Phó Thủ tướng Thường trực Chính phủ Phạm Gia Túc tại Buổi làm việc với Hiệp hội doanh nghiệp điện tử Việt Nam và một số doanh nghiệp xuất nhập khẩu lớn ngành điện tử bán dẫn",
+    "nguon":  "https://vanban.chinhphu.vn/?pageid=27160\u0026docid=219464",
+    "ngayBanHanh":  "14-09-2026",
+    "ngayHieuLuc":  "",
+    "chuaCoHieuLuc":  false,
+    "thongTin":  {
+                     "Số ký hiệu":  "481/TB-VPCP",
+                     "Ngày ban hành":  "14-09-2026",
+                     "Loại văn bản":  "Thông báo",
+                     "Cơ quan ban hành":  "Văn phòng Chính phủ",
+                     "Người ký":  "Mai Thị Thu Vân",
+                     "Trích yếu":  "Kết luận của Phó Thủ tướng Thường trực Chính phủ Phạm Gia Túc tại Buổi làm việc với Hiệp hội doanh nghiệp điện tử Việt Nam và một số doanh nghiệp xuất nhập khẩu lớn ngành điện tử bán dẫn"
+                 },
+    "tepDinhKem":  [
+                       {
+                           "tep":  "481_tb-vpcp_14092026_2-signed.signed.pdf",
+                           "nguon":  "https://datafiles.chinhphu.vn/cpp/files/vbpq/2026/9/481_tb-vpcp_14092026_2-signed.signed.pdf",
+                           "bytes":  611875
+                       },
+                       {
+                           "tep":  "481_tb-vpcp_14092026_1.xlsx",
+                           "nguon":  "https://datafiles.chinhphu.vn/cpp/files/vbpq/2026/9/481_tb-vpcp_14092026_1.xlsx",
+                           "bytes":  24452
+                       }
+                   ],
+    "taiLuc":  "2026-10-06T23:31:27+07:00"
+}

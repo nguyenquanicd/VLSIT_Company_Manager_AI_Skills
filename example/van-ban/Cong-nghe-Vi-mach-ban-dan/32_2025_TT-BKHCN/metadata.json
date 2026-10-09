@@ -1,0 +1,26 @@
+{
+    "docId":  "216030",
+    "soHieu":  "32/2025/TT-BKHCN",
+    "tieuDe":  "Thông tư số 32/2025/TT-BKHCN của Bộ Khoa học và Công nghệ: Ban hành Danh mục nguyên liệu, vật liệu bán dẫn, thiết bị, máy móc, công cụ cho công nghiệp bán dẫn được khuyến khích đầu tư phát triển",
+    "nguon":  "https://vanban.chinhphu.vn/?pageid=27160\u0026docid=216030",
+    "ngayBanHanh":  "15-11-2025",
+    "ngayHieuLuc":  "01-01-2026",
+    "chuaCoHieuLuc":  false,
+    "thongTin":  {
+                     "Số ký hiệu":  "32/2025/TT-BKHCN",
+                     "Ngày ban hành":  "15-11-2025",
+                     "Ngày có hiệu lực":  "01-01-2026",
+                     "Loại văn bản":  "Thông tư",
+                     "Cơ quan ban hành":  "Bộ Khoa học và Công nghệ",
+                     "Người ký":  "Nguyễn Mạnh Hùng",
+                     "Trích yếu":  "Ban hành Danh mục nguyên liệu, vật liệu bán dẫn, thiết bị, máy móc, công cụ cho công nghiệp bán dẫn được khuyến khích đầu tư phát triển"
+                 },
+    "tepDinhKem":  [
+                       {
+                           "tep":  "32-bkhcn.pdf",
+                           "nguon":  "https://datafiles.chinhphu.vn/cpp/files/vbpq/2025/11/32-bkhcn.pdf",
+                           "bytes":  2965820
+                       }
+                   ],
+    "taiLuc":  "2026-10-06T23:30:26+07:00"
+}

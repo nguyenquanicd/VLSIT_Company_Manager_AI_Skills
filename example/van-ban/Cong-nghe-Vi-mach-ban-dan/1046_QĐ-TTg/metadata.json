@@ -1,0 +1,25 @@
+{
+    "docId":  "218410",
+    "soHieu":  "1046/QĐ-TTg",
+    "tieuDe":  "Quyết định số 1046/QĐ-TTg của Thủ tướng Chính phủ: Về việc kiện toàn Ban Chỉ đạo quốc gia về phát triển ngành công nghiệp bán dẫn",
+    "nguon":  "https://vanban.chinhphu.vn/?pageid=27160\u0026docid=218410",
+    "ngayBanHanh":  "11-06-2026",
+    "ngayHieuLuc":  "",
+    "chuaCoHieuLuc":  false,
+    "thongTin":  {
+                     "Số ký hiệu":  "1046/QĐ-TTg",
+                     "Ngày ban hành":  "11-06-2026",
+                     "Loại văn bản":  "Quyết định",
+                     "Cơ quan ban hành":  "Thủ tướng Chính phủ",
+                     "Người ký":  "Lê Minh Hưng",
+                     "Trích yếu":  "Về việc kiện toàn Ban Chỉ đạo quốc gia về phát triển ngành công nghiệp bán dẫn"
+                 },
+    "tepDinhKem":  [
+                       {
+                           "tep":  "1046-ttg.signed.pdf",
+                           "nguon":  "https://datafiles.chinhphu.vn/cpp/files/vbpq/2026/6/1046-ttg.signed.pdf",
+                           "bytes":  200541
+                       }
+                   ],
+    "taiLuc":  "2026-10-06T23:31:06+07:00"
+}

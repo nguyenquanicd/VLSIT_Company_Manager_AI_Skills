@@ -1,0 +1,26 @@
+{
+    "docId":  "215919",
+    "soHieu":  "31/2025/TT-BKHCN",
+    "tieuDe":  "Thông tư số 31/2025/TT-BKHCN của Bộ Khoa học và Công nghệ: Ban hành Danh mục sản phẩm, dịch vụ công nghệ số trọng điểm",
+    "nguon":  "https://vanban.chinhphu.vn/?pageid=27160\u0026docid=215919",
+    "ngayBanHanh":  "14-11-2025",
+    "ngayHieuLuc":  "01-01-2026",
+    "chuaCoHieuLuc":  false,
+    "thongTin":  {
+                     "Số ký hiệu":  "31/2025/TT-BKHCN",
+                     "Ngày ban hành":  "14-11-2025",
+                     "Ngày có hiệu lực":  "01-01-2026",
+                     "Loại văn bản":  "Thông tư",
+                     "Cơ quan ban hành":  "Bộ Khoa học và Công nghệ",
+                     "Người ký":  "Nguyễn Mạnh Hùng",
+                     "Trích yếu":  "Ban hành Danh mục sản phẩm, dịch vụ công nghệ số trọng điểm"
+                 },
+    "tepDinhKem":  [
+                       {
+                           "tep":  "31-bkhcn.pdf",
+                           "nguon":  "https://datafiles.chinhphu.vn/cpp/files/vbpq/2025/11/31-bkhcn.pdf",
+                           "bytes":  2034038
+                       }
+                   ],
+    "taiLuc":  "2026-10-06T23:36:20+07:00"
+}
